@@ -1,0 +1,1670 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCSF CARE Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1e40af;--blue-lt:#eff6ff;--blue-mid:#3b82f6;
+  --teal:#0f766e;--teal-lt:#f0fdfa;
+  --slate-50:#f8fafc;--slate-100:#f1f5f9;--slate-200:#e2e8f0;
+  --slate-400:#94a3b8;--slate-600:#475569;--slate-900:#0f172a;
+  --amber-lt:#fffbeb;--amber:#d97706;
+  --em-lt:#ecfdf5;--em:#059669;
+  --red:#dc2626;--red-lt:#fef2f2;
+  --rad:10px;--rad-lg:14px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--slate-50);color:var(--slate-900);line-height:1.5;min-height:100vh}
+.serif{font-family:'DM Serif Display',serif;font-weight:400}
+
+/* ── Landing ── */
+#view-landing{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;gap:0}
+.landing-logo{width:220px;height:auto;margin-bottom:1.5rem;border-radius:12px}
+.landing-title{font-size:1.9rem;text-align:center;margin-bottom:.4rem;color:var(--slate-900)}
+.landing-sub{font-size:.9rem;color:var(--slate-600);text-align:center;margin-bottom:2.25rem}
+.entry-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:100%;max-width:480px;margin-bottom:2.25rem}
+@media(max-width:460px){.entry-grid{grid-template-columns:1fr}}
+.entry-card{background:#fff;border:1.5px solid var(--slate-200);border-radius:var(--rad-lg);padding:1.75rem 1.25rem;display:flex;flex-direction:column;align-items:center;gap:.65rem;cursor:pointer;transition:box-shadow .18s,border-color .18s,transform .12s;text-align:center;font-family:inherit}
+.entry-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08);transform:translateY(-2px)}
+.entry-card.staff:hover{border-color:var(--blue-mid)}
+.entry-card.partners:hover{border-color:var(--teal)}
+.icon-wrap{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.entry-card.staff .icon-wrap{background:var(--blue-lt);color:var(--blue)}
+.entry-card.partners .icon-wrap{background:var(--teal-lt);color:var(--teal)}
+.card-label{font-size:.95rem;font-weight:600}
+.entry-card.staff .card-label{color:var(--blue)}
+.entry-card.partners .card-label{color:var(--teal)}
+.card-desc{font-size:.78rem;color:var(--slate-600);line-height:1.4}
+.qr-title{font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--slate-400);margin-bottom:.6rem;width:100%;max-width:480px;}
+.resource-links{display:grid;grid-template-columns:1fr;gap:.65rem;width:100%;max-width:480px}
+.resource-links.two-col{grid-template-columns:1fr 1fr}
+.resource-link{background:#fff;border:1px solid var(--slate-200);border-radius:var(--rad);padding:.65rem .9rem;font-size:.82rem;color:var(--slate-900);text-decoration:none;display:flex;align-items:center;gap:.5rem;transition:background .15s,border-color .15s}
+.resource-link:hover{background:var(--slate-100);border-color:var(--slate-400)}
+
+/* ── Overlays ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:var(--rad-lg);padding:1.75rem;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.modal-box h2{font-size:1.15rem;font-weight:600;margin-bottom:.25rem}
+.modal-box p{font-size:.85rem;color:var(--slate-600);margin-bottom:1rem}
+.modal-actions{display:flex;gap:.65rem;margin-top:.75rem}
+
+/* ── Form elements ── */
+label.fl{display:block;font-size:.75rem;font-weight:500;color:var(--slate-600);margin-bottom:.3rem}
+input[type=text],input[type=url],input[type=password],input[type=email],input[type=date],input[type=number],select{
+  width:100%;padding:.45rem .7rem;border:1px solid var(--slate-200);border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--slate-900);
+  background:#fff;transition:border-color .15s,box-shadow .15s;outline:none;
+}
+input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.error-msg{color:var(--red);font-size:.78rem;margin-top:.25rem;display:none}
+.error-msg.show{display:block}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.48rem .95rem;border-radius:8px;font-size:.85rem;font-weight:500;cursor:pointer;border:none;transition:background .15s,transform .1s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover:not(:disabled){background:#1e3a8a}
+.btn-ghost{background:var(--slate-100);color:var(--slate-600)}
+.btn-ghost:hover{background:var(--slate-200)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#b91c1c}
+.btn-icon{background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;color:var(--slate-400);display:inline-flex;align-items:center;justify-content:center;transition:background .12s,color .12s;font-size:inherit}
+.btn-icon:hover{background:var(--slate-100)}
+.btn-icon.pin-act{color:var(--amber)}
+.btn-icon.del:hover{color:var(--red);background:var(--red-lt)}
+.btn-icon.edt:hover{color:var(--blue);background:var(--blue-lt)}
+
+/* ── Links view ── */
+#view-links{display:none;min-height:100vh}
+#view-links.on{display:block}
+.lk-header{background:#fff;border-bottom:1px solid var(--slate-200);padding:.9rem 1.25rem;position:sticky;top:0;z-index:10}
+.lk-header-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.lk-left{display:flex;align-items:center;gap:.65rem}
+.lk-title{font-size:1.05rem;font-weight:600}
+
+/* ── Form panel ── */
+#form-panel{display:none;background:#fff;border-bottom:1px solid var(--slate-200);padding:1rem 1.25rem}
+#form-panel.on{display:block}
+.fp-inner{max-width:960px;margin:0 auto}
+.fp-title{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--slate-400);margin-bottom:.9rem}
+.fp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:.7rem}
+.fp-field{display:flex;flex-direction:column}
+.fp-actions{display:flex;gap:.65rem;margin-top:.9rem}
+
+/* ── Main ── */
+.lk-main{max-width:960px;margin:0 auto;padding:1.25rem}
+
+/* ── Staff updates ── */
+.upd-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.75rem}
+@media(max-width:460px){.upd-grid{grid-template-columns:1fr}}
+.upd-card{border-radius:var(--rad-lg);border:1.5px dashed;padding:1.1rem;display:flex;flex-direction:column;align-items:center;gap:.4rem;text-align:center;text-decoration:none;transition:box-shadow .15s}
+.upd-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.upd-card.on{border-color:#6ee7b7;background:var(--em-lt);color:var(--em)}
+.upd-card.on .ut{color:#065f46;font-weight:600;font-size:.88rem}
+.upd-card.on .ud{color:#047857;font-size:.77rem}
+.upd-card.off{border-color:#fcd34d;background:var(--amber-lt);color:var(--amber)}
+.upd-card.off .ut{color:#92400e;font-weight:600;font-size:.88rem}
+.upd-card.off .ud{color:#b45309;font-size:.77rem}
+
+/* ── Naming tip ── */
+.tip{background:var(--blue-lt);border:1px solid #bfdbfe;border-radius:8px;padding:.55rem .85rem;font-size:.8rem;color:var(--blue);margin-bottom:1rem}
+
+/* ── Search ── */
+.search-wrap{position:relative;margin-bottom:.85rem}
+.search-wrap svg{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--slate-400);pointer-events:none;width:15px;height:15px}
+.search-wrap input{padding-left:2.1rem}
+
+/* ── Filters ── */
+.filter-row{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.5rem}
+.filter-label{font-size:.72rem;font-weight:600;color:var(--slate-400);text-transform:uppercase;letter-spacing:.07em;margin-right:.2rem}
+.pill{padding:.25rem .65rem;border-radius:999px;font-size:.78rem;font-weight:500;cursor:pointer;border:1px solid var(--slate-200);background:#fff;color:var(--slate-600);transition:background .13s,color .13s,border-color .13s;font-family:'DM Sans',sans-serif}
+.pill:hover{background:var(--slate-100)}
+.pill.ac{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pill.al{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* ── Sort ── */
+.sort-row{display:flex;align-items:center;gap:.5rem;margin-bottom:1.1rem}
+.sort-lbl{font-size:.72rem;color:var(--slate-400);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-right:.1rem}
+.sort-group{display:flex;background:var(--slate-100);border-radius:8px;padding:3px;gap:2px}
+.sort-btn{font-size:.78rem;padding:.28rem .65rem;border-radius:6px;border:none;background:none;color:var(--slate-500);cursor:pointer;transition:background .13s,color .13s;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap}
+.sort-btn.active{background:#fff;color:var(--slate-900);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.sort-arrow{font-size:.7rem;opacity:.7}
+.cat-chk{display:inline-flex;align-items:center;gap:.35rem;font-size:.82rem;color:var(--slate-700);cursor:pointer;padding:.3rem .6rem;border:1px solid var(--slate-200);border-radius:6px;background:#fff;transition:border-color .13s,background .13s;user-select:none}
+.cat-chk:hover{background:var(--slate-50);border-color:var(--slate-400)}
+.cat-chk input{accent-color:var(--blue);cursor:pointer;width:14px;height:14px}
+
+/* ── Section heads ── */
+.sec-h{font-size:.95rem;font-weight:600;margin-bottom:.2rem}
+.sec-s{font-size:.8rem;color:var(--slate-400);margin-bottom:.85rem}
+
+/* ── Cards ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.9rem;margin-bottom:1.75rem}
+.doc-card{background:#fff;border:1px solid var(--slate-200);border-radius:var(--rad-lg);padding:.95rem;display:flex;flex-direction:column;gap:.55rem;transition:box-shadow .15s,border-color .15s}
+.doc-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);border-color:var(--slate-400)}
+.dc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem}
+.dc-name{font-size:.88rem;font-weight:600;color:var(--slate-900);line-height:1.3}
+.dc-acts{display:flex;gap:1px;flex-shrink:0;opacity:1;}
+
+.dc-badges{display:flex;flex-wrap:wrap;gap:.35rem}
+.badge{font-size:.7rem;font-weight:500;padding:.18rem .5rem;border-radius:999px}
+/* Final/current version: yellow */
+.b-final{background:#fee2e2;color:#991b1b;}
+/* Per-category colors */
+.b-ver{background:var(--blue-lt);color:var(--blue)}
+.dc-date{font-size:.72rem;color:var(--slate-400)}
+.dc-link{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;color:var(--blue);text-decoration:none;font-weight:500;margin-top:auto}
+.dc-link:hover{text-decoration:underline}
+
+/* ── Empty ── */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--slate-400);font-size:.88rem}
+/* ── View toggle ── */
+.view-toggle{display:flex;gap:.3rem;background:var(--slate-100);border-radius:8px;padding:3px}
+.view-btn{background:none;border:none;cursor:pointer;padding:.3rem .45rem;border-radius:6px;color:var(--slate-400);display:flex;align-items:center;justify-content:center;transition:background .13s,color .13s}
+.view-btn.active{background:#fff;color:var(--slate-900);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+/* ── List view ── */
+.links-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.75rem}
+.doc-row{background:#fff;border:1px solid var(--slate-200);border-radius:var(--rad);padding:.7rem 1rem;display:flex;align-items:center;gap:1rem;transition:box-shadow .15s,border-color .15s}
+.doc-row:hover{box-shadow:0 2px 8px rgba(0,0,0,.06);border-color:var(--slate-400)}
+.doc-row-name{font-size:.88rem;font-weight:600;color:var(--slate-900);min-width:0;flex:1}
+.doc-row-badges{display:flex;flex-wrap:wrap;gap:.3rem;flex-shrink:0}
+.doc-row-date{font-size:.72rem;color:var(--slate-400);flex-shrink:0;white-space:nowrap}
+.doc-row-link{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;color:var(--blue);text-decoration:none;font-weight:500;flex-shrink:0;white-space:nowrap}
+.doc-row-link:hover{text-decoration:underline}
+.doc-row-acts{display:flex;gap:1px;flex-shrink:0}
+.doc-card.highlight{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,.15);animation:highlightpulse 1.8s ease;}
+@keyframes highlightpulse{0%,100%{box-shadow:0 0 0 3px rgba(220,38,38,.15)}50%{box-shadow:0 0 0 6px rgba(220,38,38,.25)}}
+
+/* ── Toast ── */
+#toasts{position:fixed;top:1rem;right:1rem;z-index:300;display:flex;flex-direction:column;gap:.45rem;pointer-events:none}
+.toast{padding:.55rem .95rem;border-radius:8px;font-size:.82rem;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.12);animation:tsin .2s ease;pointer-events:auto}
+.toast.err{background:var(--red-lt);color:var(--red);border:1px solid #fecaca}
+.toast.ok{background:var(--em-lt);color:var(--em);border:1px solid #a7f3d0}
+@keyframes tsin{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<section id="view-landing">
+  <img src="https://careregistry.ucsf.edu/sites/g/files/tkssra13071/files/CARE_logo_resized.png" alt="UCSF CARE Logo" class="landing-logo">
+  <h1 class="landing-title">UCSF CARE Dashboard</h1>
+  <p class="landing-sub">Select your team area to access Box folders and links.</p>
+  <div class="entry-grid">
+    <button id="btn-staff" class="entry-card staff">
+      <div class="icon-wrap"><i data-lucide="shield" style="width:22px;height:22px"></i></div>
+      <span class="card-label">UCSF CARE Staff</span>
+      <span class="card-desc">Passcode required. Internal folders for staff only.</span>
+    </button>
+    <button id="btn-partners" class="entry-card partners">
+      <div class="icon-wrap"><i data-lucide="users" style="width:22px;height:22px"></i></div>
+      <span class="card-label">Partners</span>
+      <span class="card-desc">Open access. Shared folders for all partners.</span>
+    </button>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:480px;margin-bottom:.6rem">
+    <p class="qr-title" style="margin-bottom:0">Quick Resources</p>
+    <button id="qr-edit-btn" class="btn-icon" title="Edit Quick Resources" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+    </button>
+  </div>
+  <div id="resource-links-container" class="resource-links"></div>
+</section>
+
+<!-- QUICK RESOURCES MODAL -->
+<div id="qr-modal" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal-box" style="max-width:480px">
+    <h2>Edit Quick Resources</h2>
+    <p>Links shown on the landing page. Drag to reorder.</p>
+    <div id="qr-list" style="display:flex;flex-direction:column;gap:.5rem;margin:.75rem 0"></div>
+    <button id="qr-add-btn" class="btn btn-ghost" style="width:100%;justify-content:center;margin-bottom:.75rem">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add link
+    </button>
+    <div class="modal-actions">
+      <button id="qr-save-btn" class="btn btn-primary">Save</button>
+      <button id="qr-cancel-btn" class="btn btn-ghost">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- PASSCODE MODAL -->
+<div id="passcode-modal" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <h2>Staff Access</h2>
+    <p>Enter the staff passcode to continue.</p>
+    <input id="passcode-input" type="password" placeholder="Enter passcode" autocomplete="off">
+    <p id="passcode-error" class="error-msg">Incorrect passcode. Please try again.</p>
+    <div class="modal-actions">
+      <button id="passcode-submit" class="btn btn-primary">Enter</button>
+      <button id="passcode-cancel" class="btn btn-ghost">Cancel</button>
+    </div>
+    <p style="margin-top:.85rem;font-size:.78rem;text-align:center">
+      <a href="#" id="forgot-passcode-link" style="color:var(--blue-mid);text-decoration:none">Forgot passcode?</a>
+    </p>
+  </div>
+</div>
+
+<!-- FORGOT PASSCODE MODAL -->
+<div id="forgot-modal" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <h2>Reset Passcode</h2>
+    <p style="margin-bottom:.5rem">Enter an authorized email to receive a reset link.</p>
+    <p style="font-size:.78rem;color:var(--slate-600);background:var(--blue-lt);border:1px solid #bfdbfe;border-radius:8px;padding:.5rem .75rem;margin-bottom:.85rem">
+      💡 Use the CARE Gmail or CARE UCSF email to reset.
+    </p>
+    <div style="margin-bottom:.75rem">
+      <label class="fl">Email address</label>
+      <input id="forgot-email-input" type="email" placeholder="careaapi@gmail.com" value="careaapi@gmail.com" autocomplete="email" style="width:100%">
+    </div>
+    <p id="forgot-error" class="error-msg">That email isn't authorized to reset the passcode.</p>
+    <p id="forgot-success" style="display:none;font-size:.82rem;color:var(--em);margin-top:.5rem">✓ Reset link sent! Check your inbox.</p>
+    <div class="modal-actions">
+      <button id="forgot-submit-btn" class="btn btn-primary">Send Reset Link</button>
+      <button id="forgot-cancel-btn" class="btn btn-ghost">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET PASSCODE MODAL -->
+<div id="reset-modal" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <h2>Set New Passcode</h2>
+    <p>Choose a new passcode for staff access.</p>
+    <div style="margin-top:.75rem">
+      <label class="fl">New passcode</label>
+      <input id="reset-pass-input" type="password" placeholder="New passcode" autocomplete="new-password" style="width:100%">
+    </div>
+    <div style="margin-top:.65rem">
+      <label class="fl">Confirm passcode</label>
+      <input id="reset-pass-confirm" type="password" placeholder="Confirm passcode" autocomplete="new-password" style="width:100%">
+    </div>
+    <p id="reset-error" class="error-msg">Passcodes don't match.</p>
+    <div class="modal-actions" style="margin-top:.85rem">
+      <button id="reset-submit-btn" class="btn btn-primary">Set Passcode</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div id="import-modal" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal-box" style="max-width:440px">
+    <h2>Import CSV</h2>
+    <p style="margin-bottom:.75rem">Upload a CSV file to bulk-add or overwrite links. Duplicates (matched by name) will be overwritten.</p>
+    <div style="background:var(--slate-50);border:1px solid var(--slate-200);border-radius:8px;padding:.75rem;font-size:.78rem;color:var(--slate-600);margin-bottom:1rem;line-height:1.7">
+      <strong>Required columns:</strong><br>
+      <code>name, url, side, categories, version, last_updated, needs_review, site</code><br><br>
+      <strong>Notes:</strong><br>
+      • <code>side</code>: <code>staff</code> or <code>partners</code><br>
+      • <code>categories</code>: comma-separated e.g. <code>Flyers,Multilingual</code><br>
+      • <code>version</code>: number e.g. <code>3</code><br>
+      • <code>last_updated</code>: YYYY-MM-DD e.g. <code>2026-05-30</code><br>
+      • <code>needs_review</code>: <code>true</code> or <code>false</code><br>
+      • <code>site</code>: required for partners e.g. <code>SF Chinatown</code> or <code>All</code>
+    </div>
+    <div style="background:var(--em-lt);border:1px solid #a7f3d0;border-radius:8px;padding:.6rem .85rem;font-size:.82rem;color:#065f46;margin-bottom:.85rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem">
+      <span>📄 Need a starting point? Download the CSV template.</span>
+      <button id="template-btn" class="btn btn-ghost" style="font-size:.78rem;padding:.3rem .7rem;flex-shrink:0;color:#065f46;border-color:#6ee7b7;background:#fff">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download
+      </button>
+    </div>
+    <div id="import-status" style="font-size:.82rem;margin-bottom:.75rem;display:none"></div>
+    <div class="modal-actions">
+      <label class="btn btn-primary" style="cursor:pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Choose File
+        <input id="csv-file-input2" type="file" accept=".csv" style="display:none">
+      </label>
+      <button id="import-cancel-btn" class="btn btn-ghost">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="confirm-modal" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <h2>Delete this link?</h2>
+    <p id="confirm-name" style="margin-bottom:.5rem"></p>
+    <p style="font-size:.8rem;color:var(--red)">This cannot be undone.</p>
+    <div class="modal-actions">
+      <button id="confirm-del" class="btn btn-danger">Delete</button>
+      <button id="confirm-cancel" class="btn btn-ghost">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="toasts"></div>
+
+<!-- LINKS VIEW -->
+<section id="view-links">
+  <header class="lk-header">
+    <div class="lk-header-inner">
+      <div class="lk-left">
+        <button id="back-btn" class="btn-icon" title="Back" aria-label="Back to home">
+          <i data-lucide="arrow-left" style="width:20px;height:20px"></i>
+        </button>
+        <span id="section-title" class="lk-title"></span>
+      </div>
+      <div id="staff-btns" style="display:none;display:flex;gap:.5rem;flex-wrap:wrap">
+        <button id="toggle-form-btn" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Link
+        </button>
+        <button id="import-btn" class="btn btn-ghost">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import CSV
+        </button>
+        <input id="csv-file-input" type="file" accept=".csv" style="display:none">
+      </div>
+    </div>
+  </header>
+
+  <!-- Add/Edit panel -->
+  <div id="form-panel">
+    <div class="fp-inner">
+      <p id="fp-title" class="fp-title">New Link</p>
+      <div class="tip" style="margin-bottom:.9rem">💡 The link will be saved as <em>Name_v[number]</em> — e.g. <em>Staff Meeting Notes_v3</em></div>
+      <form id="add-form" novalidate>
+        <div class="fp-grid">
+          <div class="fp-field">
+            <label class="fl" for="in-name">Name</label>
+            <input id="in-name" type="text" placeholder="e.g. Staff Meeting Notes" required>
+          </div>
+          <div class="fp-field">
+            <label class="fl" for="in-ver">Version number</label>
+            <input id="in-ver" type="number" min="1" step="1" placeholder="1">
+          </div>
+          <div class="fp-field">
+            <label class="fl" for="in-url">URL</label>
+            <input id="in-url" type="url" placeholder="https://..." required>
+          </div>
+          <div class="fp-field" style="grid-column:1/-1">
+            <label class="fl">Category <span style="font-weight:400;color:var(--slate-400)">(select all that apply)</span></label>
+            <div id="cat-checkboxes" style="display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin-top:.25rem">
+              <label class="cat-chk"><input type="checkbox" value="Flyers"> Flyers</label>
+              <label class="cat-chk"><input type="checkbox" value="Onboarding"> Onboarding</label>
+              <label class="cat-chk"><input type="checkbox" value="Meeting Notes"> Meeting Notes</label>
+              <label class="cat-chk"><input type="checkbox" value="Brief Report"> Brief Report</label>
+              <label class="cat-chk"><input type="checkbox" value="Multilingual">Multilingual</label>
+              <label class="cat-chk"><input type="checkbox" value="Other"> Other</label>
+            </div>
+            <input id="in-custom-cat" type="text" placeholder="Custom category name (if Other checked)" style="margin-top:.5rem;display:none">
+          </div>
+          <div class="fp-field">
+            <label class="fl" for="in-date">Last Updated</label>
+            <input id="in-date" type="date">
+          </div>
+          <div class="fp-field" id="site-field-wrap" style="display:none">
+            <label class="fl" for="in-site">Partner Site</label>
+            <select id="in-site">
+              <option value="">— Select a site —</option>
+              <option value="All">All</option>
+            </select>
+            <input id="in-site-custom" type="text" placeholder="Or type a new site name…" style="margin-top:.4rem;display:none">
+          </div>
+        </div>
+        <label style="display:flex;align-items:center;gap:.5rem;margin-top:.75rem;font-size:.85rem;color:var(--slate-600);cursor:pointer;user-select:none">
+          <input id="in-final" type="checkbox" style="width:16px;height:16px;accent-color:var(--blue);cursor:pointer;flex-shrink:0">
+          This document needs review
+        </label>
+        <div class="fp-actions">
+          <button type="submit" id="save-btn" class="btn btn-primary">Save</button>
+          <button type="button" id="cancel-btn" class="btn btn-ghost">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <main class="lk-main">
+    <!-- Partner staff updates -->
+    <div id="partner-section" style="display:none">
+      <div class="upd-grid">
+        <a id="btn-onboard" href="https://urldefense.com/v3/__https://ucsf.qualtrics.com/jfe/form/placeholder-onboarding__;!!LQC6Cpwp!pzzOiOKoJWqQOAqCZqLk8j_5avuw3eyS8AL4-JLhVrQlhRd65gOrNiZeZDRqCCb0XleKzwsJ1Zm-w4HOipkKLs0$" target="_blank" rel="noopener noreferrer" class="upd-card on">
+          <i data-lucide="user-plus" style="width:26px;height:26px"></i>
+          <span class="ut">New Staff</span>
+          <span class="ud">Let us know when a new team member joins</span>
+        </a>
+        <a id="btn-offboard" href="https://urldefense.com/v3/__https://ucsf.qualtrics.com/jfe/form/placeholder-offboarding__;!!LQC6Cpwp!pzzOiOKoJWqQOAqCZqLk8j_5avuw3eyS8AL4-JLhVrQlhRd65gOrNiZeZDRqCCb0XleKzwsJ1Zm-w4HOimgxuDU$" target="_blank" rel="noopener noreferrer" class="upd-card off">
+          <i data-lucide="user-minus" style="width:26px;height:26px"></i>
+          <span class="ut">Staff Offboarding</span>
+          <span class="ud">Notify us about recently departing staff</span>
+        </a>
+      </div>
+    </div>
+
+
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="search-input" type="text" placeholder="Search by name or category…">
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-row" id="cat-row">
+      <span class="filter-label">Category</span>
+    </div>
+    <div class="filter-row" id="site-row" style="display:none">
+      <span class="filter-label">Site</span>
+    </div>
+    <div class="filter-row" id="review-row" style="display:none">
+      <span class="filter-label">Status</span>
+      <button id="review-filter-btn" class="pill">Needs review</button>
+    </div>
+
+    <!-- Sort -->
+    <div class="sort-row">
+      <span class="sort-lbl">Sort</span>
+      <div class="sort-group">
+        <button class="sort-btn active" data-sort="alpha">Name <span class="sort-arrow" id="name-sort-arrow">↑</span></button>
+        <button class="sort-btn" data-sort="date">Last Updated</button>
+      </div>
+    </div>
+
+    <!-- Pinned -->
+    <div id="pinned-section">
+      <p class="sec-h">Pinned Documents</p>
+      <p class="sec-s">Highlighted documents relevant to current projects.</p>
+      <div id="pinned-grid" class="cards-grid"></div>
+      <p id="pinned-empty" class="empty" style="display:none;padding:.75rem 0;font-size:.8rem">No pinned documents — hover a card and click the pin icon.</p>
+    </div>
+
+    <!-- All links -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem">
+      <p class="sec-h" style="margin-bottom:0">All Links</p>
+      <div class="view-toggle">
+        <button class="view-btn active" id="grid-view-btn" title="Grid view" aria-label="Grid view">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="view-btn" id="list-view-btn" title="List view" aria-label="List view">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="cards-grid" class="cards-grid"></div>
+    <p id="empty-state" class="empty" style="display:none">No links yet — click <strong>Add Link</strong> to get started.</p>
+  </main>
+</section>
+
+<script>
+(function(){
+  /* ── Supabase config ── */
+  const SB_URL  = 'https://acnkzvqptdynwsnvugyn.supabase.co';
+  const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjbmt6dnFwdGR5bndzbnZ1Z3luIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NzM5NDMsImV4cCI6MjA5NjI0OTk0M30.x_ta4n-lJSKP8DzwxLyio92BrGB4_yzvTjpDTm9ee_8';
+  const SB_HDRS = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+
+  async function sbGet(table, params=''){
+    const r=await fetch(`${SB_URL}/rest/v1/${table}?${params}`,{headers:SB_HDRS});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
+  async function sbInsert(table, row){
+    const r=await fetch(`${SB_URL}/rest/v1/${table}`,{method:'POST',headers:SB_HDRS,body:JSON.stringify(row)});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
+  async function sbUpdate(table, id, patch){
+    const r=await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`,{method:'PATCH',headers:SB_HDRS,body:JSON.stringify(patch)});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
+  async function sbDelete(table, id){
+    const r=await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`,{method:'DELETE',headers:SB_HDRS});
+    if(!r.ok) throw new Error(await r.text());
+  }
+
+  /* ── Row mapper: DB cols → app shape ── */
+  function rowToItem(r){
+    return {
+      id:           r.id,
+      name:         r.name,
+      url:          r.url,
+      categories:   Array.isArray(r.categories) ? r.categories : (r.categories ? JSON.parse(r.categories) : []),
+      category:     r.category || '',
+      side:         r.side,
+      site:         r.site || '',
+      created_at:   r.created_at,
+      last_updated: r.last_updated || '',
+      pinned:       !!r.pinned,
+      needsReview:  !!r.needs_review,
+    };
+  }
+  /* ── Item → DB patch ── */
+  function itemToRow(item){
+    return {
+      id:           item.id,
+      name:         item.name,
+      url:          item.url,
+      categories:   item.categories,
+      category:     item.category || '',
+      side:         item.side,
+      site:         item.site || '',
+      created_at:   item.created_at,
+      last_updated: item.last_updated || null,
+      pinned:       !!item.pinned,
+      needs_review: !!item.needsReview,
+    };
+  }
+
+  /* ── Async data helpers ── */
+  async function loadData(){
+    const rows = await sbGet('links','select=*&order=created_at.asc');
+    return rows.map(rowToItem);
+  }
+  async function saveNewItem(item){
+    const rows = await sbInsert('links', itemToRow(item));
+    return rows[0] ? rowToItem(rows[0]) : item;
+  }
+  async function updateItem(item){
+    const patch = itemToRow(item);
+    delete patch.id;
+    await sbUpdate('links', item.id, patch);
+  }
+  async function deleteItem(id){
+    await sbDelete('links', id);
+  }
+  async function loadCustomCats(){
+    const rows = await sbGet('custom_cats','select=name&order=name.asc');
+    return rows.map(r=>r.name);
+  }
+  async function saveCustomCat(name){
+    try { await sbInsert('custom_cats',{name}); } catch(e){ /* already exists */ }
+  }
+
+  /* ── UI loading state ── */
+  function setLoading(on){
+    let el=document.getElementById('sb-loading');
+    if(!el){
+      el=document.createElement('div');
+      el.id='sb-loading';
+      el.style.cssText='position:fixed;inset:0;background:rgba(248,250,252,.85);z-index:999;display:flex;align-items:center;justify-content:center;font-family:DM Sans,sans-serif;font-size:.9rem;color:#475569;gap:.6rem';
+      el.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading…';
+      const style=document.createElement('style');
+      style.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
+      document.head.appendChild(style);
+      document.body.appendChild(el);
+    }
+    el.style.display=on?'flex':'none';
+  }
+
+  /* ── State ── */
+  const PASS_KEY  = 'care_staff_unlocked';
+  let allData       = [];
+  let customCats    = [];
+  let currentSide   = null;
+  let staffUnlocked = sessionStorage.getItem(PASS_KEY) === '1';
+  let activeFilter  = 'All';
+  let activeSite    = 'All';
+  let reviewFilter  = false;
+  let sortMode      = 'alpha';
+  let viewMode      = localStorage.getItem('care_view_mode') || 'grid';
+  let searchQ       = '';
+  let editingItem   = null;
+  let pendingDelete = null;
+
+  /* ── Refs ── */
+  const $ = id => document.getElementById(id);
+  const viewLanding  = $('view-landing');
+  const viewLinks    = $('view-links');
+  const passModal    = $('passcode-modal');
+  const confirmModal = $('confirm-modal');
+  const formPanel    = $('form-panel');
+  const addForm      = $('add-form');
+  const customInput  = $('in-custom-cat');
+  const searchInput  = $('search-input');
+  const cardsGrid    = $('cards-grid');
+  const pinnedGrid   = $('pinned-grid');
+  const emptyEl      = $('empty-state');
+  const pinnedEmpty  = $('pinned-empty');
+
+  /* ── Utils ── */
+  function today(){
+    const d=new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function fmtDate(s){
+    if(!s) return '';
+    const [y,m,d]=s.split('-');
+    return `${m}/${d}/${y}`;
+  }
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+  function toast(msg,type='err'){
+    const el=document.createElement('div');
+    el.className=`toast ${type}`;
+    el.textContent=msg;
+    $('toasts').appendChild(el);
+    setTimeout(()=>el.remove(),3500);
+  }
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+  function updateQrEditBtn(){
+    const btn = document.getElementById('qr-edit-btn');
+    if(btn) btn.style.display = staffUnlocked ? '' : 'none';
+  }
+
+  /* ── Bootstrap ── */
+  setLoading(true);
+  Promise.all([loadData(), loadCustomCats(), loadPartnerSites()]).then(([data, cats])=>{
+    allData = data;
+    customCats = cats;
+    buildCustomCatCheckboxes();
+    updateQrEditBtn();
+    lucide.createIcons();
+    setLoading(false);
+  }).catch(err=>{
+    setLoading(false);
+    toast('Could not connect to database. Check your connection.','err');
+    console.error(err);
+  });
+
+  lucide.createIcons();
+
+  /* ── Landing buttons ── */
+  $('btn-staff').addEventListener('click', ()=>{ staffUnlocked ? showSide('staff') : openPassModal(); });
+  $('btn-partners').addEventListener('click', ()=>showSide('partners'));
+
+  /* ── Passcode ── */
+  function openPassModal(){
+    passModal.classList.add('open');
+    setTimeout(()=>$('passcode-input').focus(),50);
+  }
+  $('passcode-submit').addEventListener('click', tryPass);
+  $('passcode-input').addEventListener('keydown', e=>{ if(e.key==='Enter') tryPass(); });
+
+  async function hashString(str){
+    const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+
+  async function tryPass(){
+    const val=$('passcode-input').value;
+    const submitBtn=$('passcode-submit');
+    submitBtn.disabled=true;
+    submitBtn.textContent='Checking…';
+    try {
+      const inputHash=await hashString(val);
+      const rows=await sbGet('settings','select=value&key=eq.staff_passcode_hash');
+      const storedHash=rows[0]?.value;
+      if(storedHash && inputHash===storedHash){
+        staffUnlocked=true;
+        sessionStorage.setItem(PASS_KEY,'1');
+        passModal.classList.remove('open');
+        $('passcode-input').value='';
+        $('passcode-error').classList.remove('show');
+        updateQrEditBtn();
+        showSide('staff');
+      } else {
+        $('passcode-error').classList.add('show');
+        $('passcode-input').select();
+      }
+    } catch(e){
+      toast('Could not verify passcode — check your connection.','err');
+      console.error(e);
+    } finally {
+      submitBtn.disabled=false;
+      submitBtn.textContent='Enter';
+    }
+  }
+  $('passcode-cancel').addEventListener('click',()=>{
+    passModal.classList.remove('open');
+    $('passcode-input').value='';
+    $('passcode-error').classList.remove('show');
+  });
+
+  /* ── Forgot passcode ── */
+  const EDGE_FN = 'https://acnkzvqptdynwsnvugyn.supabase.co/functions/v1/resend-reset-email';
+
+  $('forgot-passcode-link').addEventListener('click', e=>{
+    e.preventDefault();
+    passModal.classList.remove('open');
+    $('passcode-input').value='';
+    $('passcode-error').classList.remove('show');
+    $('forgot-email-input').value='careaapi@gmail.com';
+    $('forgot-error').classList.remove('show');
+    $('forgot-success').style.display='none';
+    $('forgot-modal').classList.add('open');
+    setTimeout(()=>$('forgot-email-input').focus(),50);
+  });
+
+  $('forgot-cancel-btn').addEventListener('click',()=>{
+    $('forgot-modal').classList.remove('open');
+  });
+
+  $('forgot-submit-btn').addEventListener('click', async ()=>{
+    const email = $('forgot-email-input').value.trim().toLowerCase();
+    if(!email){ toast('Please enter your email.','err'); return; }
+    const btn = $('forgot-submit-btn');
+    btn.disabled=true; btn.textContent='Sending…';
+    $('forgot-error').classList.remove('show');
+    $('forgot-success').style.display='none';
+    try {
+      const res = await fetch(EDGE_FN, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ email, siteUrl: window.location.origin + window.location.pathname })
+      });
+      if(res.status===403){
+        $('forgot-error').classList.add('show');
+      } else if(res.ok){
+        $('forgot-success').style.display='block';
+        $('forgot-submit-btn').style.display='none';
+      } else {
+        toast('Something went wrong — please try again.','err');
+      }
+    } catch(e){
+      toast('Could not send reset email — check your connection.','err');
+      console.error(e);
+    } finally {
+      btn.disabled=false; btn.textContent='Send Reset Link';
+    }
+  });
+
+  /* ── Reset passcode via token in URL ── */
+  (async function checkResetToken(){
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('reset');
+    if(!token) return;
+
+    // Validate token exists and isn't used
+    const rows = await sbGet('reset_tokens', `select=*&token=eq.${token}&used=eq.false`);
+    if(!rows.length){
+      toast('This reset link is invalid or has already been used.','err');
+      return;
+    }
+
+    // Check token isn't older than 1 hour
+    const created = new Date(rows[0].created_at);
+    if(Date.now() - created.getTime() > 60*60*1000){
+      toast('This reset link has expired. Please request a new one.','err');
+      return;
+    }
+
+    // Show reset modal
+    window.history.replaceState({}, '', window.location.pathname);
+    $('reset-modal').classList.add('open');
+    setTimeout(()=>$('reset-pass-input').focus(),50);
+
+    $('reset-submit-btn').addEventListener('click', async ()=>{
+      const pass = $('reset-pass-input').value;
+      const confirm = $('reset-pass-confirm').value;
+      if(!pass){ toast('Please enter a new passcode.','err'); return; }
+      if(pass !== confirm){ $('reset-error').classList.add('show'); return; }
+      $('reset-error').classList.remove('show');
+
+      const btn = $('reset-submit-btn');
+      btn.disabled=true; btn.textContent='Saving…';
+      try {
+        const newHash = await hashString(pass);
+        // Update hash in settings
+        await fetch(`${SB_URL}/rest/v1/settings?key=eq.staff_passcode_hash`,{
+          method:'PATCH',
+          headers:SB_HDRS,
+          body:JSON.stringify({value: newHash})
+        });
+        // Mark token as used
+        await fetch(`${SB_URL}/rest/v1/reset_tokens?token=eq.${token}`,{
+          method:'PATCH',
+          headers:SB_HDRS,
+          body:JSON.stringify({used:true})
+        });
+        $('reset-modal').classList.remove('open');
+        toast('Passcode updated! You can now log in.','ok');
+      } catch(e){
+        toast('Could not save new passcode — please try again.','err');
+        console.error(e);
+      } finally {
+        btn.disabled=false; btn.textContent='Set Passcode';
+      }
+    });
+  })();
+
+  /* ── Delete confirm ── */
+  function askDelete(item){
+    pendingDelete=item;
+    $('confirm-name').textContent=`"${item.name}" will be permanently removed.`;
+    confirmModal.classList.add('open');
+  }
+  $('confirm-del').addEventListener('click', async ()=>{
+    if(!pendingDelete) return;
+    const btn=$('confirm-del');
+    btn.disabled=true; btn.textContent='Deleting…';
+    try {
+      await deleteItem(pendingDelete.id);
+      allData=allData.filter(d=>d.id!==pendingDelete.id);
+      pendingDelete=null;
+      confirmModal.classList.remove('open');
+      renderFilters(); render();
+      toast('Link deleted.','ok');
+    } catch(e){
+      toast('Delete failed — please try again.','err');
+      console.error(e);
+    } finally {
+      btn.disabled=false; btn.textContent='Delete';
+    }
+  });
+  $('confirm-cancel').addEventListener('click',()=>{ confirmModal.classList.remove('open'); pendingDelete=null; });
+
+  /* ── Navigation ── */
+  $('back-btn').addEventListener('click',()=>{
+    viewLinks.classList.remove('on');
+    viewLanding.style.display='';
+    closePanel();
+    currentSide=null;
+    searchInput.value=''; searchQ='';
+  });
+
+  function showSide(side){
+    currentSide=side;
+    activeFilter='All'; activeSite='All'; sortMode='alpha'; reviewFilter=false;
+    const rb=$('review-filter-btn');
+    rb.style.background=''; rb.style.color=''; rb.style.borderColor='';
+    searchInput.value=''; searchQ='';
+    viewLanding.style.display='none';
+    viewLinks.classList.add('on');
+    $('section-title').textContent = side==='staff' ? 'UCSF CARE Staff' : 'Partners';
+    $('partner-section').style.display = side==='partners' ? '' : 'none';
+    $('review-row').style.display = side==='staff' ? '' : 'none';
+    $('staff-btns').style.display = staffUnlocked ? 'flex' : 'none';
+    $('site-field-wrap').style.display = side==='partners' ? '' : 'none';
+    updateSortBtns();
+    renderFilters();
+    render();
+  }
+
+  /* ── Form panel ── */
+  $('toggle-form-btn').addEventListener('click',()=>{
+    formPanel.classList.contains('on') ? closePanel() : openPanel(null);
+  });
+  $('cancel-btn').addEventListener('click', closePanel);
+
+  // Show custom input when "Other" checked
+  document.getElementById('cat-checkboxes').addEventListener('change', ()=>{
+    const otherChecked=[...document.querySelectorAll('#cat-checkboxes input:checked')].some(i=>i.value==='Other');
+    customInput.style.display=otherChecked?'':'none';
+    if(!otherChecked) customInput.value='';
+  });
+
+
+  function buildCustomCatCheckboxes(){
+    // Remove any previously injected custom checkboxes
+    document.querySelectorAll('#cat-checkboxes .custom-cat-chk').forEach(el=>el.remove());
+    const otherLabel=document.querySelector('#cat-checkboxes label:last-child');
+    customCats.forEach(cat=>{
+      const lbl=document.createElement('label');
+      lbl.className='cat-chk custom-cat-chk';
+      lbl.innerHTML=`<input type="checkbox" value="${cat}"> ${cat}`;
+      // Insert before "Other"
+      otherLabel.parentNode.insertBefore(lbl, otherLabel);
+    });
+  }
+
+  function getSelectedCats(){
+    const checked=[...document.querySelectorAll('#cat-checkboxes input:checked')].map(i=>i.value);
+    if(!checked.length) return [];
+    return checked.map(v=>{
+      if(v!=='Other') return v;
+      const custom=customInput.value.trim();
+      if(custom && !customCats.includes(custom) &&
+         !['Flyers','Onboarding','Meeting Notes','Brief Report','Multilingual','Other'].includes(custom)){
+        customCats.push(custom);
+        saveCustomCats(customCats);
+        buildCustomCatCheckboxes();
+      }
+      return custom||'Other';
+    });
+  }
+
+  function setCatCheckboxes(cats){
+    const arr=Array.isArray(cats)?cats:[cats].filter(Boolean);
+    document.querySelectorAll('#cat-checkboxes input').forEach(cb=>{
+      cb.checked=arr.includes(cb.value)||(cb.value==='Other'&&arr.some(c=>!['Flyers','Onboarding','Meeting Notes','Brief Report','Multilingual'].includes(c)));
+    });
+    const customCats=arr.filter(c=>!['Flyers','Onboarding','Meeting Notes','Brief Report','Multilingual','Other'].includes(c));
+    if(customCats.length){ customInput.value=customCats[0]; customInput.style.display=''; }
+    else { customInput.value=''; customInput.style.display='none'; }
+  }
+
+  function clearCatCheckboxes(){
+    document.querySelectorAll('#cat-checkboxes input').forEach(cb=>cb.checked=false);
+    customInput.value=''; customInput.style.display='none';
+  }
+  function openPanel(item){
+    editingItem=item||null;
+    $('fp-title').textContent = item ? 'Edit Link' : 'New Link';
+    $('save-btn').textContent = item ? 'Update' : 'Save';
+    if(item){
+      const nameMatch=(item.name||'').match(/^(.+?)_v(\d+)$/);
+      $('in-name').value=nameMatch?nameMatch[1]:(item.name||'');
+      $('in-ver').value=nameMatch?nameMatch[2]:'1';
+      $('in-url').value=item.url||'';
+      $('in-date').value=item.last_updated||'';
+      $('in-final').checked=item.needsReview||false;
+      populateSiteDropdown(item.site||'');
+      setCatCheckboxes(item.categories||item.category||[]);
+    } else {
+      addForm.reset();
+      clearCatCheckboxes();
+      $('in-date').value=today();
+      $('in-ver').value='1';
+      populateSiteDropdown('');
+    }
+    formPanel.classList.add('on');
+    setTimeout(()=>$('in-name').focus(),50);
+  }
+
+  function closePanel(){
+    formPanel.classList.remove('on');
+    editingItem=null;
+    addForm.reset();
+    $('in-final').checked=false;
+    $('in-ver').value='1';
+    clearCatCheckboxes();
+  }
+
+  let partnerSites = [];
+
+  async function loadPartnerSites(){
+    const rows = await sbGet('partner_sites','select=name&order=name.asc');
+    partnerSites = rows.map(r=>r.name);
+  }
+
+  function populateSiteDropdown(selectedSite){
+    const sel=$('in-site');
+    // Merge DB sites with any sites already used in links (catches any legacy ones)
+    const usedSites=[...new Set(allData.filter(d=>d.side==='partners').map(d=>d.site||'').filter(Boolean))];
+    const allSites=[...new Set([...partnerSites, ...usedSites])].sort();
+    sel.innerHTML='<option value="">— Select a site —</option><option value="All">All</option>';
+    allSites.forEach(s=>{
+      if(s==='All') return;
+      const opt=document.createElement('option');
+      opt.value=s; opt.textContent=s;
+      sel.appendChild(opt);
+    });
+    const addNewOpt=document.createElement('option');
+    addNewOpt.value='__new__'; addNewOpt.textContent='+ Add new site…';
+    sel.appendChild(addNewOpt);
+    sel.value=selectedSite||'';
+    $('in-site-custom').style.display='none';
+    $('in-site-custom').value='';
+  }
+
+  $('in-site').addEventListener('change',()=>{
+    const isNew=$('in-site').value==='__new__';
+    $('in-site-custom').style.display=isNew?'':'none';
+    if(isNew) setTimeout(()=>$('in-site-custom').focus(),30);
+    else $('in-site-custom').value='';
+  });
+
+  /* ── Form submit ── */
+  addForm.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const cats=getSelectedCats();
+    if(!cats.length){ toast('Please select at least one category.'); return; }
+    if(cats.length===1&&cats[0]==='Multilingual'){ toast('Multilingual must be combined with another category (e.g. Flyers + Multilingual).'); return; }
+
+    const rawName=$('in-name').value.trim();
+    const verNum=parseInt($('in-ver').value)||1;
+    const name=rawName?`${rawName}_v${verNum}`:'';
+    const url=$('in-url').value.trim();
+    if(!rawName){ toast('Name is required.'); return; }
+    if(!url){ toast('URL is required.'); return; }
+
+    // Site mandatory for partners
+    let siteVal='';
+    if(currentSide==='partners'){
+      const sel=$('in-site').value;
+      if(!sel){ toast('Please select a partner site.'); return; }
+      if(sel==='__new__'){
+        siteVal=$('in-site-custom').value.trim();
+        if(!siteVal){ toast('Please enter a site name.'); return; }
+        // Save new site to partner_sites table if not already there
+        if(!partnerSites.includes(siteVal)){
+          partnerSites.push(siteVal);
+          partnerSites.sort();
+          try { await sbInsert('partner_sites',{name:siteVal}); } catch(e){ /* already exists */ }
+        }
+      } else {
+        siteVal=sel;
+      }
+    }
+
+    // Duplicate check — warn and highlight existing card
+    if(!editingItem){
+      const duplicate=allData.find(d=>
+        d.side===currentSide &&
+        (d.name||'').toLowerCase().replace(/_v\d+$/,'').trim()===rawName.toLowerCase().trim()
+      );
+      if(duplicate){
+        toast(`"${duplicate.name}" already exists — the existing card has been highlighted below.`,'err');
+        const allCards=[...document.querySelectorAll('#cards-grid .doc-card, #pinned-grid .doc-card')];
+        const dupCard=allCards.find(card=>{
+          const nameEl=card.querySelector('.dc-name');
+          return nameEl && nameEl.textContent.trim()===duplicate.name.trim();
+        });
+        if(dupCard){
+          dupCard.classList.add('highlight');
+          dupCard.scrollIntoView({behavior:'smooth',block:'center'});
+          setTimeout(()=>dupCard.classList.remove('highlight'),4000);
+        }
+        return;
+      }
+    }
+
+    const saveBtn=$('save-btn');
+    saveBtn.disabled=true;
+    saveBtn.textContent=editingItem?'Updating…':'Saving…';
+
+    try {
+      // Save any new custom cats to DB
+      const builtIn=['Flyers','Onboarding','Meeting Notes','Brief Report','Multilingual','Other'];
+      for(const cat of cats){
+        if(!builtIn.includes(cat) && !customCats.includes(cat)){
+          customCats.push(cat);
+          await saveCustomCat(cat);
+        }
+      }
+      buildCustomCatCheckboxes();
+
+      if(editingItem){
+        const updated={...editingItem, name, url, categories:cats, category:cats[0]||'', last_updated:$('in-date').value, needsReview:$('in-final').checked, site:siteVal};
+        await updateItem(updated);
+        const idx=allData.findIndex(d=>d.id===editingItem.id);
+        if(idx>-1) allData[idx]=updated;
+        toast('Link updated.','ok');
+      } else {
+        if(allData.length>=999){ toast('Limit of 999 items reached.'); return; }
+        const newItem={ id:uid(), name, url, categories:cats, category:cats[0]||'', side:currentSide,
+          created_at:new Date().toISOString(), last_updated:$('in-date').value, pinned:false, needsReview:$('in-final').checked, site:siteVal };
+        const saved = await saveNewItem(newItem);
+        allData.push(saved);
+        toast('Link saved.','ok');
+      }
+
+      closePanel();
+      renderFilters(); render();
+    } catch(err){
+      toast('Save failed — please try again.','err');
+      console.error(err);
+    } finally {
+      saveBtn.disabled=false;
+      saveBtn.textContent='Save';
+    }
+  });
+
+  /* ── Sort ── */
+  document.querySelectorAll('.sort-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      if(b.dataset.sort==='alpha'){
+        if(sortMode==='alpha') sortMode='alpha-desc';
+        else sortMode='alpha';
+      } else {
+        sortMode=b.dataset.sort;
+      }
+      updateSortBtns(); render();
+    });
+  });
+  function updateSortBtns(){
+    document.querySelectorAll('.sort-btn').forEach(b=>{
+      const isName=b.dataset.sort==='alpha';
+      const nameActive=sortMode==='alpha'||sortMode==='alpha-desc';
+      const active=isName ? nameActive : b.dataset.sort===sortMode;
+      b.classList.toggle('active', active);
+    });
+    const arrow=document.getElementById('name-sort-arrow');
+    if(arrow) arrow.textContent=sortMode==='alpha-desc'?'↓':'↑';
+  }
+
+  /* ── Needs Review filter ── */
+  document.getElementById('review-filter-btn').addEventListener('click',()=>{
+    reviewFilter=!reviewFilter;
+    const btn=document.getElementById('review-filter-btn');
+    if(reviewFilter){
+      btn.style.background='#fee2e2'; btn.style.color='#991b1b'; btn.style.borderColor='#991b1b';
+    } else {
+      btn.style.background=''; btn.style.color=''; btn.style.borderColor='';
+    }
+    render();
+  });
+
+  /* ── View toggle ── */
+  $('grid-view-btn').addEventListener('click',()=>{ viewMode='grid'; localStorage.setItem('care_view_mode','grid'); updateViewBtns(); render(); });
+  $('list-view-btn').addEventListener('click',()=>{ viewMode='list'; localStorage.setItem('care_view_mode','list'); updateViewBtns(); render(); });
+  function updateViewBtns(){
+    $('grid-view-btn').classList.toggle('active', viewMode==='grid');
+    $('list-view-btn').classList.toggle('active', viewMode==='list');
+  }
+  // Apply saved preference on load
+  updateViewBtns();
+
+  /* ── Search ── */
+  searchInput.addEventListener('input',()=>{ searchQ=searchInput.value.trim().toLowerCase(); render(); });
+
+  /* ── Filtered data ── */
+  function getFiltered(){
+    let d=allData.filter(x=>x.side===currentSide);
+    if(searchQ) d=d.filter(x=>(x.name||'').toLowerCase().includes(searchQ)||((x.categories||[x.category]).join(' ')).toLowerCase().includes(searchQ));
+    if(activeFilter!=='All') d=d.filter(x=>(x.categories||[x.category]).includes(activeFilter));
+    if(activeSite!=='All') d=d.filter(x=>(x.site||'')=== activeSite);
+    if(reviewFilter) d=d.filter(x=>x.needsReview);
+    if(sortMode==='alpha')         d=[...d].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+    else if(sortMode==='alpha-desc') d=[...d].sort((a,b)=>(b.name||'').localeCompare(a.name||''));
+    else if(sortMode==='date')     d=[...d].sort((a,b)=>new Date(b.last_updated||0)-new Date(a.last_updated||0));
+    return d;
+  }
+
+  /* ── Render ── */
+  function render(){
+    const filtered=getFiltered();
+    emptyEl.style.display=filtered.length?'none':'';
+    cardsGrid.innerHTML='';
+    if(viewMode==='list'){
+      cardsGrid.className='links-list';
+      filtered.forEach(item=>cardsGrid.appendChild(buildRow(item)));
+    } else {
+      cardsGrid.className='cards-grid';
+      filtered.forEach(item=>cardsGrid.appendChild(buildCard(item,false)));
+    }
+
+    const pinned=allData.filter(d=>d.side===currentSide&&d.pinned)
+                        .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+    pinnedGrid.innerHTML='';
+    pinnedEmpty.style.display=pinned.length?'none':'';
+    pinned.forEach(item=>pinnedGrid.appendChild(buildCard(item,true)));
+
+    lucide.createIcons();
+  }
+
+  function renderFilters(){
+    const sd=allData.filter(d=>d.side===currentSide);
+    const cats=['All',...new Set(sd.flatMap(d=>d.categories||[d.category]).filter(Boolean))];
+    const catRow=$('cat-row');
+    catRow.querySelectorAll('.pill').forEach(el=>el.remove());
+    cats.forEach(c=>{
+      const btn=document.createElement('button');
+      const isActive=c===activeFilter;
+      if(c==='All'){
+        btn.className='pill'+(isActive?' ac':'');
+      } else {
+        const cs=catStyle(c);
+        btn.className='pill';
+        if(isActive){
+          btn.style.background=cs.bg;
+          btn.style.color=cs.color;
+          btn.style.borderColor=cs.color;
+        }
+      }
+      btn.textContent=c;
+      btn.addEventListener('click',()=>{ activeFilter=c; renderFilters(); render(); });
+      catRow.appendChild(btn);
+    });
+
+    // Site filter row (partners only)
+    const siteRow=$('site-row');
+    siteRow.querySelectorAll('.pill').forEach(el=>el.remove());
+    if(currentSide==='partners'){
+      const sites=['All',...new Set(sd.map(d=>d.site||'').filter(Boolean))].sort();
+      if(sites.length>1){
+        siteRow.style.display='';
+        sites.forEach(s=>{
+          const btn=document.createElement('button');
+          const isActive=s===activeSite;
+          btn.className='pill'+(isActive&&s==='All'?' ac':'');
+          if(isActive&&s!=='All'){
+            btn.style.background='#e0f2fe'; btn.style.color='#075985'; btn.style.borderColor='#075985';
+          }
+          btn.textContent=s;
+          btn.addEventListener('click',()=>{ activeSite=s; renderFilters(); render(); });
+          siteRow.appendChild(btn);
+        });
+      } else {
+        siteRow.style.display='none';
+      }
+    } else {
+      siteRow.style.display='none';
+    }
+  }
+
+  /* ── Category badge class ── */
+  /* Dynamic category colors — deterministic from name, works for any new category */
+  const CAT_PALETTES=[
+    {bg:'#ede9fe',color:'#5b21b6'},{bg:'#e0f2fe',color:'#075985'},
+    {bg:'#fce7f3',color:'#9d174d'},{bg:'#fff7ed',color:'#c2410c'},
+    {bg:'#f0fdf4',color:'#166534'},{bg:'#fdf4ff',color:'#7e22ce'},
+    {bg:'#ecfeff',color:'#0e7490'},{bg:'#f0f9ff',color:'#0369a1'},
+    {bg:'#fefce8',color:'#854d0e'},{bg:'#f7fee7',color:'#3f6212'},
+  ];
+  const catColorCache={};
+  function catStyle(cat){
+    const key=(cat||'').toLowerCase();
+    if(!catColorCache[key]){
+      let hash=0;
+      for(let i=0;i<key.length;i++) hash=(hash*31+key.charCodeAt(i))&0xfffffff;
+      catColorCache[key]=CAT_PALETTES[hash%CAT_PALETTES.length];
+    }
+    return catColorCache[key];
+  }
+
+  /* ── Card builder ── */
+  function buildCard(item, isPinned){
+    const isStaff=staffUnlocked;
+    const card=document.createElement('div');
+    card.className='doc-card';
+
+    // Top
+    const top=document.createElement('div');
+    top.className='dc-top';
+    const nameEl=document.createElement('div');
+    nameEl.className='dc-name';
+    nameEl.textContent=item.name;
+    top.appendChild(nameEl);
+
+    // Actions: staff gets pin+edit+delete; partners in pinned section get static pin icon only
+    if(isStaff){
+      const acts=document.createElement('div');
+      acts.className='dc-acts';
+
+      const pinBtn=document.createElement('button');
+      pinBtn.className='btn-icon'+(item.pinned?' pin-act':'');
+      pinBtn.title=item.pinned?'Unpin':'Pin';
+      pinBtn.setAttribute('aria-label',item.pinned?'Unpin':'Pin');
+      const pf=item.pinned?'currentColor':'none';
+      pinBtn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="${pf}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>`;
+      pinBtn.addEventListener('click', async ()=>{
+        const cnt=allData.filter(d=>d.side===currentSide&&d.pinned).length;
+        if(!item.pinned&&cnt>=3){ toast('Maximum 3 pinned documents per section.'); return; }
+        const newPinned=!item.pinned;
+        try {
+          await updateItem({...item, pinned:newPinned});
+          const idx=allData.findIndex(d=>d.id===item.id);
+          if(idx>-1) allData[idx]={...allData[idx],pinned:newPinned};
+          renderFilters(); render();
+        } catch(e){ toast('Could not update pin.','err'); console.error(e); }
+      });
+
+      const editBtn=document.createElement('button');
+      editBtn.className='btn-icon edt';
+      editBtn.title='Edit'; editBtn.setAttribute('aria-label','Edit');
+      editBtn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>`;
+      editBtn.addEventListener('click',()=>openPanel(item));
+
+      const delBtn=document.createElement('button');
+      delBtn.className='btn-icon del';
+      delBtn.title='Delete'; delBtn.setAttribute('aria-label','Delete');
+      delBtn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
+      delBtn.addEventListener('click',()=>askDelete(item));
+
+      acts.append(pinBtn,editBtn,delBtn);
+      top.appendChild(acts);
+    } else if(isPinned){
+      // Partners: static amber pin icon in pinned section only, no interaction
+      const staticPin=document.createElement('span');
+      staticPin.className='btn-icon pin-act';
+      staticPin.style.cursor='default';
+      staticPin.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>`;
+      top.appendChild(staticPin);
+    }
+    card.appendChild(top);
+
+    // Badges
+    const badges=document.createElement('div');
+    badges.className='dc-badges';
+    if(item.needsReview) badges.innerHTML+=`<span class="badge b-final">Needs review</span>`;
+    (item.categories||[item.category]).filter(Boolean).forEach(c=>{const cs=catStyle(c);badges.innerHTML+=`<span class="badge" style="background:${cs.bg};color:${cs.color}">${esc(c)}</span>`;});
+    if(item.site) badges.innerHTML+=`<span class="badge" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:-1px;margin-right:2px"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${esc(item.site)}</span>`;
+    card.appendChild(badges);
+
+    // Date
+    if(item.last_updated){
+      const d=document.createElement('div');
+      d.className='dc-date';
+      d.textContent=`Updated ${fmtDate(item.last_updated)}`;
+      card.appendChild(d);
+    }
+
+    // Link
+    const a=document.createElement('a');
+    a.className='dc-link';
+    a.href=item.url; a.target='_blank'; a.rel='noopener noreferrer';
+    a.innerHTML=`Open <i data-lucide="external-link" style="width:12px;height:12px"></i>`;
+    card.appendChild(a);
+
+    return card;
+  }
+
+  /* ── Row builder (list view) ── */
+  function buildRow(item){
+    const isStaff=staffUnlocked;
+    const row=document.createElement('div');
+    row.className='doc-row';
+
+    // Name
+    const nameEl=document.createElement('div');
+    nameEl.className='doc-row-name';
+    nameEl.textContent=item.name;
+    row.appendChild(nameEl);
+
+    // Badges
+    const badges=document.createElement('div');
+    badges.className='doc-row-badges';
+    if(item.needsReview) badges.innerHTML+=`<span class="badge b-final">Needs review</span>`;
+    (item.categories||[item.category]).filter(Boolean).forEach(c=>{const cs=catStyle(c);badges.innerHTML+=`<span class="badge" style="background:${cs.bg};color:${cs.color}">${esc(c)}</span>`;});
+    if(item.site) badges.innerHTML+=`<span class="badge" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:-1px;margin-right:2px"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${esc(item.site)}</span>`;
+    row.appendChild(badges);
+
+    // Date
+    if(item.last_updated){
+      const d=document.createElement('div');
+      d.className='doc-row-date';
+      d.textContent=fmtDate(item.last_updated);
+      row.appendChild(d);
+    }
+
+    // Open link
+    const a=document.createElement('a');
+    a.className='doc-row-link';
+    a.href=item.url; a.target='_blank'; a.rel='noopener noreferrer';
+    a.innerHTML=`Open <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+    row.appendChild(a);
+
+    // Actions (staff only)
+    // Actions: staff gets pin+edit+delete; partners in pinned section get static pin icon only
+    if(isStaff){
+      const acts=document.createElement('div');
+      acts.className='doc-row-acts';
+
+      const pinBtn=document.createElement('button');
+      pinBtn.className='btn-icon'+(item.pinned?' pin-act':'');
+      pinBtn.title=item.pinned?'Unpin':'Pin';
+      const pinFill=item.pinned?'currentColor':'none';
+      pinBtn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="${pinFill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>`;
+      pinBtn.addEventListener('click', async ()=>{
+        const cnt=allData.filter(d=>d.side===currentSide&&d.pinned).length;
+        if(!item.pinned&&cnt>=3){ toast('Maximum 3 pinned documents per section.'); return; }
+        const newPinned=!item.pinned;
+        try {
+          await updateItem({...item, pinned:newPinned});
+          const idx=allData.findIndex(d=>d.id===item.id);
+          if(idx>-1) allData[idx]={...allData[idx],pinned:newPinned};
+          renderFilters(); render();
+        } catch(e){ toast('Could not update pin.','err'); console.error(e); }
+      });
+
+      const editBtn=document.createElement('button');
+      editBtn.className='btn-icon edt';
+      editBtn.title='Edit';
+      editBtn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>`;
+      editBtn.addEventListener('click',()=>openPanel(item));
+
+      const delBtn=document.createElement('button');
+      delBtn.className='btn-icon del';
+      delBtn.title='Delete';
+      delBtn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
+      delBtn.addEventListener('click',()=>askDelete(item));
+
+      acts.append(pinBtn,editBtn,delBtn);
+      row.appendChild(acts);
+    } else if(item.pinned){
+      // Partners: static amber pin in pinned section rows only
+      const staticPin=document.createElement('span');
+      staticPin.className='btn-icon pin-act';
+      staticPin.style.cursor='default';
+      staticPin.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>`;
+      row.appendChild(staticPin);
+    }
+
+    return row;
+  }
+
+  /* ── CSV Import ── */
+  $('import-btn').addEventListener('click',()=>{
+    $('import-status').style.display='none';
+    $('import-status').textContent='';
+    $('import-modal').classList.add('open');
+  });
+  $('import-cancel-btn').addEventListener('click',()=>$('import-modal').classList.remove('open'));
+
+  document.getElementById('csv-file-input2').addEventListener('change', function(){
+    const file=this.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=async function(e){
+      const text=e.target.result;
+      const rows=text.trim().split('\n');
+      const headers=rows[0].split(',').map(h=>h.trim().toLowerCase().replace(/['"]/g,''));
+
+      const idx={
+        name:      headers.indexOf('name'),
+        url:       headers.indexOf('url'),
+        side:      headers.indexOf('side'),
+        categories:headers.indexOf('categories'),
+        version:   headers.indexOf('version'),
+        last_updated:headers.indexOf('last_updated'),
+        needs_review:headers.indexOf('needs_review'),
+        site:      headers.indexOf('site'),
+      };
+
+      const missing=Object.entries(idx).filter(([k,v])=>v===-1).map(([k])=>k);
+      if(missing.length){
+        showImportStatus(`Missing columns: ${missing.join(', ')}`, 'err');
+        return;
+      }
+
+      showImportStatus('Importing…','ok');
+      let added=0, updated=0, skipped=0;
+      const builtIn=['Flyers','Onboarding','Meeting Notes','Brief Report','Multilingual','Other'];
+
+      for(let i=1;i<rows.length;i++){
+        if(!rows[i].trim()) continue;
+        const cols=parseCSVRow(rows[i]);
+        const name=(cols[idx.name]||'').trim().replace(/^["']|["']$/g,'');
+        const url=(cols[idx.url]||'').trim().replace(/^["']|["']$/g,'');
+        const side=(cols[idx.side]||'').trim().toLowerCase().replace(/^["']|["']$/g,'');
+        const catsRaw=(cols[idx.categories]||'').trim().replace(/^["']|["']$/g,'');
+        const verNum=parseInt((cols[idx.version]||'1').trim())||1;
+        const lastUpd=(cols[idx.last_updated]||'').trim().replace(/^["']|["']$/g,'');
+        const needsReview=(cols[idx.needs_review]||'').trim().toLowerCase()==='true';
+        const site=(cols[idx.site]||'').trim().replace(/^["']|["']$/g,'');
+
+        if(!name||!url){ skipped++; continue; }
+        if(!['staff','partners'].includes(side)){ skipped++; continue; }
+        if(side==='partners'&&!site){ skipped++; continue; }
+
+        const cats=catsRaw.split(',').map(c=>c.trim()).filter(Boolean);
+        if(cats.length===1&&cats[0]==='Multilingual'){ skipped++; continue; }
+        const fullName=`${name}_v${verNum}`;
+
+        // Save any new custom cats
+        for(const cat of cats){
+          if(!builtIn.includes(cat)&&!customCats.includes(cat)){
+            customCats.push(cat);
+            await saveCustomCat(cat);
+          }
+        }
+
+        const existingIdx=allData.findIndex(d=>
+          d.side===side &&
+          (d.name||'').toLowerCase()===fullName.toLowerCase()
+        );
+
+        try {
+          if(existingIdx>-1){
+            const updated_item={...allData[existingIdx], name:fullName, url, categories:cats, category:cats[0]||'', last_updated:lastUpd, needsReview, site};
+            await updateItem(updated_item);
+            allData[existingIdx]=updated_item;
+            updated++;
+          } else {
+            const newItem={id:uid(), name:fullName, url, categories:cats, category:cats[0]||'', side, created_at:new Date().toISOString(), last_updated:lastUpd, pinned:false, needsReview, site};
+            const saved=await saveNewItem(newItem);
+            allData.push(saved);
+            added++;
+          }
+        } catch(err){ skipped++; console.error(err); }
+      }
+
+      buildCustomCatCheckboxes();
+      renderFilters(); render();
+      showImportStatus(`Done — ${added} added, ${updated} updated, ${skipped} skipped.`, 'ok');
+      this.value='';
+    };
+    reader.readAsText(file);
+  });
+
+  function parseCSVRow(row){
+    const result=[];
+    let cur='', inQ=false;
+    for(let i=0;i<row.length;i++){
+      const ch=row[i];
+      if(ch==='"'){ inQ=!inQ; }
+      else if(ch===','&&!inQ){ result.push(cur); cur=''; }
+      else { cur+=ch; }
+    }
+    result.push(cur);
+    return result;
+  }
+
+  function showImportStatus(msg, type){
+    const el=$('import-status');
+    el.textContent=msg;
+    el.style.color=type==='ok'?'var(--em)':'var(--red)';
+    el.style.display='block';
+  }
+
+  /* ── CSV Template download ── */
+  $('template-btn').addEventListener('click',()=>{
+    const headers='name,url,side,categories,version,last_updated,needs_review,site';
+    const example1='Staff Meeting Notes,https://box.com/your-link,staff,Meeting Notes,5,2026-05-28,false,';
+    const example2='AANHPI Health Flyer,https://box.com/your-link,partners,"Flyers,Multilingual",3,2026-05-20,true,SF Chinatown';
+    const csv=[headers,example1,example2].join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='care_dashboard_template.csv';
+    a.click();
+  });
+
+  /* ── Quick Resources ── */
+  let quickResources = [];
+
+  async function loadQuickResources(){
+    const rows = await sbGet('quick_resources','select=*&order=sort_order.asc');
+    quickResources = rows;
+    renderQuickResources();
+  }
+
+  function renderQuickResources(){
+    const container = document.getElementById('resource-links-container');
+    container.innerHTML = '';
+    quickResources.forEach(r => {
+      const a = document.createElement('a');
+      a.className = 'resource-link';
+      a.href = r.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.innerHTML = `<i data-lucide="${r.icon || 'globe'}" style="width:15px;height:15px;flex-shrink:0"></i> ${esc(r.label)}`;
+      container.appendChild(a);
+    });
+    // 2-col layout for exactly 2 links
+    container.classList.toggle('two-col', quickResources.length === 2);
+    lucide.createIcons();
+  }
+
+  // Show edit button when staff is unlocked (called after login)
+
+  document.getElementById('qr-edit-btn').addEventListener('click', openQrModal);
+
+  const ICONS = ['globe','bar-chart-2','link','file-text','folder','external-link','bookmark','star','heart','info'];
+
+  function openQrModal(){
+    const list = document.getElementById('qr-list');
+    list.innerHTML = '';
+    quickResources.forEach((r, i) => list.appendChild(buildQrRow(r, i)));
+    document.getElementById('qr-modal').classList.add('open');
+  }
+
+  function buildQrRow(r, i){
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:.5rem;align-items:center';
+    row.dataset.index = i;
+
+    const iconSel = document.createElement('select');
+    iconSel.style.cssText = 'width:110px;flex-shrink:0';
+    ICONS.forEach(ic => {
+      const opt = document.createElement('option');
+      opt.value = ic; opt.textContent = ic;
+      if(ic === (r.icon||'globe')) opt.selected = true;
+      iconSel.appendChild(opt);
+    });
+
+    const labelIn = document.createElement('input');
+    labelIn.type = 'text'; labelIn.placeholder = 'Label';
+    labelIn.value = r.label || '';
+    labelIn.style.flex = '1';
+
+    const urlIn = document.createElement('input');
+    urlIn.type = 'url'; urlIn.placeholder = 'https://…';
+    urlIn.value = r.url || '';
+    urlIn.style.flex = '1.5';
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn-icon del';
+    delBtn.title = 'Remove';
+    delBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
+    delBtn.addEventListener('click', () => row.remove());
+
+    row.append(iconSel, labelIn, urlIn, delBtn);
+    return row;
+  }
+
+  document.getElementById('qr-add-btn').addEventListener('click', () => {
+    const list = document.getElementById('qr-list');
+    const i = list.children.length;
+    list.appendChild(buildQrRow({label:'', url:'', icon:'globe'}, i));
+  });
+
+  document.getElementById('qr-cancel-btn').addEventListener('click', () => {
+    document.getElementById('qr-modal').classList.remove('open');
+  });
+
+  document.getElementById('qr-save-btn').addEventListener('click', async () => {
+    const saveBtn = document.getElementById('qr-save-btn');
+    const rows = [...document.getElementById('qr-list').children];
+    const updated = rows.map((row, i) => ({
+      label: row.children[1].value.trim(),
+      url:   row.children[2].value.trim(),
+      icon:  row.children[0].value,
+      sort_order: i,
+    })).filter(r => r.label && r.url);
+
+    saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+    try {
+      // Delete all existing rows then reinsert
+      const existing = await sbGet('quick_resources','select=id');
+      for(const r of existing){
+        await fetch(`${SB_URL}/rest/v1/quick_resources?id=eq.${r.id}`,{method:'DELETE',headers:SB_HDRS});
+      }
+      for(const r of updated){
+        await sbInsert('quick_resources', r);
+      }
+      quickResources = await sbGet('quick_resources','select=*&order=sort_order.asc');
+      renderQuickResources();
+      document.getElementById('qr-modal').classList.remove('open');
+      toast('Quick resources saved.','ok');
+    } catch(e){
+      toast('Save failed — please try again.','err');
+      console.error(e);
+    } finally {
+      saveBtn.disabled = false; saveBtn.textContent = 'Save';
+    }
+  });
+
+  // Load quick resources on page init
+  loadQuickResources().catch(e => console.error('Could not load quick resources', e));
+
+  lucide.createIcons();
+})();
+</script>
+</body>
+</html>
