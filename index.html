@@ -1481,9 +1481,13 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
       btn.addEventListener('click', e => {
         e.stopPropagation();
         row.dataset.icon = ic;
-        // Update trigger icon
-        trigIcon.setAttribute('data-lucide', ic);
-        lucide.createIcons({nodes:[trigIcon]});
+        // Rebuild trigger icon fresh
+        trigger.innerHTML = '';
+        const newIcon = document.createElement('i');
+        newIcon.setAttribute('data-lucide', ic);
+        newIcon.style.cssText = 'width:15px;height:15px;pointer-events:none';
+        trigger.appendChild(newIcon);
+        lucide.createIcons({nodes:[newIcon]});
         // Update selection highlight
         popover.querySelectorAll('button').forEach(b => {
           const sel = b.dataset.ic === ic;
