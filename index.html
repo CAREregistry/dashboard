@@ -315,6 +315,9 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import CSV
         </button>
         <input id="csv-file-input" type="file" accept=".csv" style="display:none">
+        <button id="logout-btn" class="btn btn-ghost" style="display:none" title="Log out of staff access">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Log Out
+        </button>
       </div>
     </div>
   </header>
@@ -550,11 +553,38 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
   }
 
   /* ── State ── */
-  const PASS_KEY  = 'care_staff_unlocked';
+  const PASS_KEY      = 'care_staff_unlocked';
+  const PASS_TIME_KEY = 'care_staff_last_active';
+  const SEVEN_DAYS    = 7 * 24 * 60 * 60 * 1000;
+
+  function isAuthValid(){
+    if(localStorage.getItem(PASS_KEY) !== '1') return false;
+    const last = parseInt(localStorage.getItem(PASS_TIME_KEY) || '0', 10);
+    if(Date.now() - last > SEVEN_DAYS){ doLogout(false); return false; }
+    return true;
+  }
+  function touchActivity(){
+    if(localStorage.getItem(PASS_KEY) === '1')
+      localStorage.setItem(PASS_TIME_KEY, Date.now().toString());
+  }
+  function doLogout(showToast=true){
+    staffUnlocked = false;
+    localStorage.removeItem(PASS_KEY);
+    localStorage.removeItem(PASS_TIME_KEY);
+    updateLogoutBtn();
+    updateQrEditBtn();
+    if(showToast) toast('You have been logged out.','ok');
+  }
+
+  // Reset inactivity timer on any user interaction
+  ['mousemove','keydown','pointerdown','scroll','touchstart'].forEach(evt =>
+    document.addEventListener(evt, touchActivity, {passive:true})
+  );
+
   let allData       = [];
   let customCats    = [];
   let currentSide   = null;
-  let staffUnlocked = sessionStorage.getItem(PASS_KEY) === '1';
+  let staffUnlocked = isAuthValid();
   let activeFilter  = 'All';
   let activeSite    = 'All';
   let reviewFilter  = false;
@@ -603,6 +633,10 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     const btn = document.getElementById('qr-edit-btn');
     if(btn) btn.style.display = staffUnlocked ? '' : 'none';
   }
+  function updateLogoutBtn(){
+    const btn = document.getElementById('logout-btn');
+    if(btn) btn.style.display = staffUnlocked ? '' : 'none';
+  }
 
   /* ── Bootstrap ── */
   setLoading(true);
@@ -611,6 +645,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     customCats = cats;
     buildCustomCatCheckboxes();
     updateQrEditBtn();
+    updateLogoutBtn();
     lucide.createIcons();
     setLoading(false);
   }).catch(err=>{
@@ -649,11 +684,13 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
       const storedHash=rows[0]?.value;
       if(storedHash && inputHash===storedHash){
         staffUnlocked=true;
-        sessionStorage.setItem(PASS_KEY,'1');
+        localStorage.setItem(PASS_KEY,'1');
+        localStorage.setItem(PASS_TIME_KEY, Date.now().toString());
         passModal.classList.remove('open');
         $('passcode-input').value='';
         $('passcode-error').classList.remove('show');
         updateQrEditBtn();
+        updateLogoutBtn();
         showSide('staff');
       } else {
         $('passcode-error').classList.add('show');
@@ -671,6 +708,19 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     passModal.classList.remove('open');
     $('passcode-input').value='';
     $('passcode-error').classList.remove('show');
+  });
+
+  $('logout-btn').addEventListener('click',()=>{
+    doLogout(true);
+    // Return to landing if currently in staff view
+    if(currentSide === 'staff'){
+      viewLinks.classList.remove('on');
+      viewLanding.style.display='';
+      closePanel();
+      currentSide=null;
+      searchInput.value=''; searchQ='';
+    }
+    $('staff-btns').style.display='none';
   });
 
   /* ── Delete confirm ── */
