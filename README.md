@@ -100,4 +100,4 @@ Staff can import links in bulk via CSV. Download the template from the Import bu
 
 ## Maintainer
 
-This dashboard is owned and maintained by Emily — UCSF CARE.
+This dashboard is owned and maintained by Emily Dang — UCSF CARE (emily.dang2@ucsf.edu).
