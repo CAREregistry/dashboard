@@ -65,7 +65,7 @@ To publish changes, upload the updated `index.html` to the GitHub repo:
 
 ## Resetting the Staff Passcode
 
-If the passcode is forgotten, run this in the **Supabase SQL Editor** with the new password:
+If the passcode is forgotten, run this in the **Supabase SQL Editor** with the new password replacing 'YourNewPassword':
 
 ```sql
 update settings
