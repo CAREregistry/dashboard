@@ -249,19 +249,58 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
 
 <!-- IMPORT MODAL -->
 <div id="import-modal" class="overlay" role="dialog" aria-modal="true">
-  <div class="modal-box" style="max-width:440px">
+  <div class="modal-box" style="max-width:560px">
     <h2>Import CSV</h2>
     <p style="margin-bottom:.75rem">Upload a CSV file to bulk-add or overwrite links. Duplicates (matched by name) will be overwritten.</p>
-    <div style="background:var(--slate-50);border:1px solid var(--slate-200);border-radius:8px;padding:.75rem;font-size:.78rem;color:var(--slate-600);margin-bottom:1rem;line-height:1.7">
-      <strong>Required columns:</strong><br>
-      <code>name, url, side, categories, version, last_updated, needs_review, site</code><br><br>
-      <strong>Notes:</strong><br>
-      • <code>side</code>: <code>staff</code> or <code>partners</code><br>
-      • <code>categories</code>: comma-separated e.g. <code>Flyers,Multilingual</code><br>
-      • <code>version</code>: number e.g. <code>3</code><br>
-      • <code>last_updated</code>: YYYY-MM-DD e.g. <code>2026-05-30</code><br>
-      • <code>needs_review</code>: <code>true</code> or <code>false</code><br>
-      • <code>site</code>: required for partners e.g. <code>SF Chinatown</code> or <code>All</code>
+    <div style="border:1px solid var(--slate-200);border-radius:8px;overflow:hidden;margin-bottom:1rem;font-size:.78rem">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="background:var(--slate-100)">
+            <th style="padding:.4rem .65rem;text-align:left;font-weight:600;color:var(--slate-600);width:32%">Column</th>
+            <th style="padding:.4rem .65rem;text-align:left;font-weight:600;color:var(--slate-600)">Expected value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top:1px solid var(--slate-200)">
+            <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>name</code></td>
+            <td style="padding:.4rem .65rem;color:var(--slate-700)">Any text</td>
+          </tr>
+          <tr style="border-top:1px solid var(--slate-200);background:var(--slate-50)">
+            <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>url</code></td>
+            <td style="padding:.4rem .65rem;color:var(--slate-700)">Full URL starting with https://</td>
+          </tr>
+          <tr style="border-top:1px solid var(--slate-200)">
+            <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>side</code></td>
+            <td style="padding:.4rem .65rem;display:flex;gap:.3rem;align-items:center;flex-wrap:wrap">
+              <span style="background:#eff6ff;color:#1e40af;padding:.1rem .45rem;border-radius:999px;font-size:.72rem;font-weight:500">staff</span>
+              <span style="background:#f0fdfa;color:#0f766e;padding:.1rem .45rem;border-radius:999px;font-size:.72rem;font-weight:500">partners</span>
+            </td>
+          </tr>
+          <tr style="border-top:1px solid var(--slate-200);background:var(--slate-50)">
+            <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>categories</code></td>
+            <td style="padding:.4rem .65rem;color:var(--slate-700)">Comma-separated — <code>Flyers,Onboarding</code></td>
+          </tr>
+          <tr style="border-top:1px solid var(--slate-200)">
+            <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>last_updated</code></td>
+            <td style="padding:.4rem .65rem;color:var(--slate-700)">M/DD/YYYY — <code>5/30/2026</code></td>
+          </tr>
+          <tr style="border-top:1px solid var(--slate-200);background:var(--slate-50)">
+            <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>needs_review</code></td>
+            <td style="padding:.4rem .65rem;display:flex;gap:.3rem;align-items:center">
+              <span style="background:#fef2f2;color:#dc2626;padding:.1rem .45rem;border-radius:999px;font-size:.72rem;font-weight:500">true</span>
+              <span style="background:#f1f5f9;color:#475569;padding:.1rem .45rem;border-radius:999px;font-size:.72rem;font-weight:500">false</span>
+            </td>
+          </tr>
+          <tr style="border-top:1px solid var(--slate-200)">
+            <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>languages</code></td>
+            <td style="padding:.4rem .65rem;color:var(--slate-700)">Optional, comma-separated — <code>English,Vietnamese</code></td>
+          </tr>
+          <tr style="border-top:1px solid var(--slate-200);background:var(--slate-50)">
+            <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>site</code></td>
+            <td style="padding:.4rem .65rem;color:var(--slate-700)">Partners only — e.g. <code>CSUEB</code> or <code>All</code></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <div style="background:var(--em-lt);border:1px solid #a7f3d0;border-radius:8px;padding:.6rem .85rem;font-size:.82rem;color:#065f46;margin-bottom:.85rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem">
       <span>📄 Need a starting point? Download the CSV template.</span>
@@ -269,7 +308,14 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download
       </button>
     </div>
-    <div id="import-status" style="font-size:.82rem;margin-bottom:.75rem;display:none"></div>
+    <div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:8px;padding:.65rem .85rem;font-size:.82rem;color:#92400e;margin-bottom:.85rem;display:flex;align-items:flex-start;gap:.6rem">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span><strong>Before uploading:</strong> delete the 2 example rows from the template — only your real data should remain.</span>
+    </div>
+    <div id="import-status" style="font-size:.82rem;margin-bottom:.75rem;display:none;align-items:center;justify-content:space-between;gap:.5rem">
+      <span id="import-status-text"></span>
+      <button onclick="document.getElementById('import-status').style.display='none'" class="btn-icon" style="flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
     <div class="modal-actions">
       <label class="btn btn-primary" style="cursor:pointer">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -277,6 +323,21 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
         <input id="csv-file-input2" type="file" accept=".csv" style="display:none">
       </label>
       <button id="import-cancel-btn" class="btn btn-ghost">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT SUCCESS MODAL -->
+<div id="import-success-modal" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal-box" style="max-width:360px;text-align:center">
+    <div style="width:48px;height:48px;border-radius:50%;background:var(--em-lt);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--em)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2 style="margin-bottom:.5rem">Upload Successful</h2>
+    <div id="import-success-stats" style="display:flex;justify-content:center;gap:.65rem;margin:.85rem 0;flex-wrap:wrap"></div>
+    <div class="modal-actions" style="justify-content:center">
+      <button id="import-another-btn" class="btn btn-primary">Upload Another</button>
+      <button id="import-done-btn" class="btn btn-ghost">Close</button>
     </div>
   </div>
 </div>
@@ -326,20 +387,31 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
   <div id="form-panel">
     <div class="fp-inner">
       <p id="fp-title" class="fp-title">New Link</p>
-      <div class="tip" style="margin-bottom:.9rem">💡 The link will be saved as <em>Name_v[number]</em> — e.g. <em>Staff Meeting Notes_v3</em></div>
+
       <form id="add-form" novalidate>
         <div class="fp-grid">
           <div class="fp-field">
             <label class="fl" for="in-name">Name</label>
             <input id="in-name" type="text" placeholder="e.g. Staff Meeting Notes" required>
           </div>
-          <div class="fp-field">
-            <label class="fl" for="in-ver">Version number</label>
-            <input id="in-ver" type="number" min="1" step="1" placeholder="1">
-          </div>
+
           <div class="fp-field">
             <label class="fl" for="in-url">URL</label>
             <input id="in-url" type="url" placeholder="https://..." required>
+          </div>
+          <div class="fp-field" style="grid-column:1/-1">
+            <label class="fl">Language <span style="font-weight:400;color:var(--slate-400)">(select all that apply)</span></label>
+            <div id="lang-checkboxes" style="display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin-top:.25rem">
+              <label class="cat-chk"><input type="checkbox" value="English"> English</label>
+              <label class="cat-chk"><input type="checkbox" value="S. Chinese"> S. Chinese</label>
+              <label class="cat-chk"><input type="checkbox" value="T. Chinese"> T. Chinese</label>
+              <label class="cat-chk"><input type="checkbox" value="Hindi"> Hindi</label>
+              <label class="cat-chk"><input type="checkbox" value="Japanese"> Japanese</label>
+              <label class="cat-chk"><input type="checkbox" value="Korean"> Korean</label>
+              <label class="cat-chk"><input type="checkbox" value="Samoan"> Samoan</label>
+              <label class="cat-chk"><input type="checkbox" value="Tagalog"> Tagalog</label>
+              <label class="cat-chk"><input type="checkbox" value="Vietnamese"> Vietnamese</label>
+            </div>
           </div>
           <div class="fp-field" style="grid-column:1/-1">
             <label class="fl">Category <span style="font-weight:400;color:var(--slate-400)">(select all that apply)</span></label>
@@ -348,7 +420,6 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
               <label class="cat-chk"><input type="checkbox" value="Onboarding"> Onboarding</label>
               <label class="cat-chk"><input type="checkbox" value="Meeting Notes"> Meeting Notes</label>
               <label class="cat-chk"><input type="checkbox" value="Brief Report"> Brief Report</label>
-              <label class="cat-chk"><input type="checkbox" value="Multilingual">Multilingual</label>
               <label class="cat-chk"><input type="checkbox" value="Other"> Other</label>
             </div>
             <input id="in-custom-cat" type="text" placeholder="Custom category name (if Other checked)" style="margin-top:.5rem;display:none">
@@ -415,6 +486,9 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     <div class="filter-row" id="review-row" style="display:none">
       <span class="filter-label">Status</span>
       <button id="review-filter-btn" class="pill">Needs review</button>
+    </div>
+    <div class="filter-row" id="lang-row">
+      <span class="filter-label">Language</span>
     </div>
 
     <!-- Sort -->
@@ -492,6 +566,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
       last_updated: r.last_updated || '',
       pinned:       !!r.pinned,
       needsReview:  !!r.needs_review,
+      languages:    Array.isArray(r.languages) ? r.languages : (r.languages ? JSON.parse(r.languages) : []),
     };
   }
   /* ── Item → DB patch ── */
@@ -508,6 +583,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
       last_updated: item.last_updated || null,
       pinned:       !!item.pinned,
       needs_review: !!item.needsReview,
+      languages:    item.languages || [],
     };
   }
 
@@ -588,6 +664,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
   let activeFilter  = 'All';
   let activeSite    = 'All';
   let reviewFilter  = false;
+  let languageFilter= 'All';
   let sortMode      = 'alpha';
   let viewMode      = localStorage.getItem('care_view_mode') || 'grid';
   let searchQ       = '';
@@ -620,6 +697,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     return `${m}/${d}/${y}`;
   }
   function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+  function toTitleCase(s){return s.replace(/\w\S*/g,w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase())}
   function toast(msg,type='err'){
     const el=document.createElement('div');
     el.className=`toast ${type}`;
@@ -760,7 +838,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
 
   function showSide(side){
     currentSide=side;
-    activeFilter='All'; activeSite='All'; sortMode='alpha'; reviewFilter=false;
+    activeFilter='All'; activeSite='All'; sortMode='alpha'; reviewFilter=false; languageFilter='All';
     const rb=$('review-filter-btn');
     rb.style.background=''; rb.style.color=''; rb.style.borderColor='';
     searchInput.value=''; searchQ='';
@@ -768,9 +846,9 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     viewLinks.classList.add('on');
     $('section-title').textContent = side==='staff' ? 'UCSF CARE Staff' : 'Partners';
     $('partner-section').style.display = side==='partners' ? '' : 'none';
-    $('review-row').style.display = side==='staff' ? '' : 'none';
+    $('review-row').style.display = staffUnlocked ? '' : 'none';
     $('staff-btns').style.display = staffUnlocked ? 'flex' : 'none';
-    $('needs-review-wrap').style.display = side==='partners' ? 'none' : '';
+    $('needs-review-wrap').style.display = staffUnlocked ? '' : 'none';
     $('site-field-wrap').style.display = side==='partners' ? '' : 'none';
     updateSortBtns();
     renderFilters();
@@ -795,7 +873,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     // Remove any previously injected custom checkboxes
     document.querySelectorAll('#cat-checkboxes .custom-cat-chk').forEach(el=>el.remove());
     const otherLabel=document.querySelector('#cat-checkboxes label:last-child');
-    customCats.forEach(cat=>{
+    [...customCats].map(toTitleCase).sort().forEach(cat=>{
       const lbl=document.createElement('label');
       lbl.className='cat-chk custom-cat-chk';
       lbl.innerHTML=`<input type="checkbox" value="${cat}"> ${cat}`;
@@ -809,7 +887,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     if(!checked.length) return [];
     return checked.map(v=>{
       if(v!=='Other') return v;
-      const custom=customInput.value.trim();
+      const custom=toTitleCase(customInput.value.trim());
       if(custom && !customCats.includes(custom) &&
          !['Flyers','Onboarding','Meeting Notes','Brief Report','Multilingual','Other'].includes(custom)){
         customCats.push(custom);
@@ -834,6 +912,17 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     document.querySelectorAll('#cat-checkboxes input').forEach(cb=>cb.checked=false);
     customInput.value=''; customInput.style.display='none';
   }
+  function getSelectedLangs(){
+    return [...document.querySelectorAll('#lang-checkboxes input:checked')].map(i=>i.value);
+  }
+  function setLangCheckboxes(langs){
+    const arr=Array.isArray(langs)?langs:[];
+    document.querySelectorAll('#lang-checkboxes input').forEach(cb=>{ cb.checked=arr.includes(cb.value); });
+  }
+  function clearLangCheckboxes(){
+    document.querySelectorAll('#lang-checkboxes input').forEach(cb=>cb.checked=false);
+  }
+
   function openPanel(item){
     editingItem=item||null;
     $('fp-title').textContent = item ? 'Edit Link' : 'New Link';
@@ -841,17 +930,17 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     if(item){
       const nameMatch=(item.name||'').match(/^(.+?)_v(\d+)$/);
       $('in-name').value=nameMatch?nameMatch[1]:(item.name||'');
-      $('in-ver').value=nameMatch?nameMatch[2]:'1';
       $('in-url').value=item.url||'';
       $('in-date').value=item.last_updated||'';
       $('in-final').checked=item.needsReview||false;
       populateSiteDropdown(item.site||'');
       setCatCheckboxes(item.categories||item.category||[]);
+      setLangCheckboxes(item.languages||[]);
     } else {
       addForm.reset();
       clearCatCheckboxes();
+      clearLangCheckboxes();
       $('in-date').value=today();
-      $('in-ver').value='1';
       populateSiteDropdown('');
     }
     formPanel.classList.add('on');
@@ -863,8 +952,8 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     editingItem=null;
     addForm.reset();
     $('in-final').checked=false;
-    $('in-ver').value='1';
     clearCatCheckboxes();
+    clearLangCheckboxes();
   }
 
   let partnerSites = [];
@@ -878,10 +967,9 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     const sel=$('in-site');
     // Merge DB sites with any sites already used in links (catches any legacy ones)
     const usedSites=[...new Set(allData.filter(d=>d.side==='partners').map(d=>d.site||'').filter(Boolean))];
-    const allSites=[...new Set([...partnerSites, ...usedSites])].sort();
+    const allSites=[...new Set([...partnerSites, ...usedSites])].filter(s=>s!=='All').sort();
     sel.innerHTML='<option value="">— Select a site —</option><option value="All">All</option>';
     allSites.forEach(s=>{
-      if(s==='All') return;
       const opt=document.createElement('option');
       opt.value=s; opt.textContent=s;
       sel.appendChild(opt);
@@ -909,8 +997,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     if(cats.length===1&&cats[0]==='Multilingual'){ toast('Multilingual must be combined with another category (e.g. Flyers + Multilingual).'); return; }
 
     const rawName=$('in-name').value.trim();
-    const verNum=parseInt($('in-ver').value)||1;
-    const name=rawName?`${rawName}_v${verNum}`:'';
+    const name=rawName;
     const url=$('in-url').value.trim();
     if(!rawName){ toast('Name is required.'); return; }
     if(!url){ toast('URL is required.'); return; }
@@ -938,7 +1025,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     if(!editingItem){
       const duplicate=allData.find(d=>
         d.side===currentSide &&
-        (d.name||'').toLowerCase().replace(/_v\d+$/,'').trim()===rawName.toLowerCase().trim()
+        (d.name||'').toLowerCase().trim()===rawName.toLowerCase().trim()
       );
       if(duplicate){
         toast(`"${duplicate.name}" already exists — the existing card has been highlighted below.`,'err');
@@ -966,13 +1053,15 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
       for(const cat of cats){
         if(!builtIn.includes(cat) && !customCats.includes(cat)){
           customCats.push(cat);
+          customCats.sort();
           await saveCustomCat(cat);
         }
       }
       buildCustomCatCheckboxes();
+      const langs=getSelectedLangs();
 
       if(editingItem){
-        const updated={...editingItem, name, url, categories:cats, category:cats[0]||'', last_updated:$('in-date').value, needsReview:$('in-final').checked, site:siteVal};
+        const updated={...editingItem, name, url, categories:cats, category:cats[0]||'', last_updated:$('in-date').value, needsReview:$('in-final').checked, site:siteVal, languages:langs};
         await updateItem(updated);
         const idx=allData.findIndex(d=>d.id===editingItem.id);
         if(idx>-1) allData[idx]=updated;
@@ -980,7 +1069,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
       } else {
         if(allData.length>=999){ toast('Limit of 999 items reached.'); return; }
         const newItem={ id:uid(), name, url, categories:cats, category:cats[0]||'', side:currentSide,
-          created_at:new Date().toISOString(), last_updated:$('in-date').value, pinned:false, needsReview:$('in-final').checked, site:siteVal };
+          created_at:new Date().toISOString(), last_updated:$('in-date').value, pinned:false, needsReview:$('in-final').checked, site:siteVal, languages:langs };
         const saved = await saveNewItem(newItem);
         allData.push(saved);
         toast('Link saved.','ok');
@@ -1052,6 +1141,7 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
     if(activeFilter!=='All') d=d.filter(x=>(x.categories||[x.category]).includes(activeFilter));
     if(activeSite!=='All') d=d.filter(x=>(x.site||'')=== activeSite);
     if(reviewFilter) d=d.filter(x=>x.needsReview);
+    if(languageFilter!=='All') d=d.filter(x=>(x.languages||[]).includes(languageFilter));
     if(sortMode==='alpha')         d=[...d].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
     else if(sortMode==='alpha-desc') d=[...d].sort((a,b)=>(b.name||'').localeCompare(a.name||''));
     else if(sortMode==='date')     d=[...d].sort((a,b)=>new Date(b.last_updated||0)-new Date(a.last_updated||0));
@@ -1082,7 +1172,8 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
 
   function renderFilters(){
     const sd=allData.filter(d=>d.side===currentSide);
-    const cats=['All',...new Set(sd.flatMap(d=>d.categories||[d.category]).filter(Boolean))];
+    const catOthers=[...new Set(sd.flatMap(d=>d.categories||[d.category]).filter(Boolean))].map(toTitleCase).sort();
+    const cats=['All',...catOthers];
     const catRow=$('cat-row');
     catRow.querySelectorAll('.pill').forEach(el=>el.remove());
     cats.forEach(c=>{
@@ -1104,11 +1195,29 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
       catRow.appendChild(btn);
     });
 
-    // Site filter row (partners only)
+    // Language filter row
+    const langRow=$('lang-row');
+    langRow.querySelectorAll('.pill').forEach(el=>el.remove());
+    const usedLangs=[...new Set(sd.flatMap(d=>d.languages||[]).filter(Boolean))].sort();
+    if(usedLangs.length){
+      langRow.style.display='';
+      ['All',...usedLangs].forEach(l=>{
+        const btn=document.createElement('button');
+        const isActive=l===languageFilter;
+        btn.className='pill'+(isActive&&l==='All'?' ac':'');
+        if(isActive&&l!=='All'){btn.style.background='#f0fdfa';btn.style.color='#0f766e';btn.style.borderColor='#0f766e';}
+        btn.textContent=l;
+        btn.addEventListener('click',()=>{ languageFilter=l; renderFilters(); render(); });
+        langRow.appendChild(btn);
+      });
+    } else {
+      langRow.style.display='none';
+    }
     const siteRow=$('site-row');
     siteRow.querySelectorAll('.pill').forEach(el=>el.remove());
     if(currentSide==='partners'){
-      const sites=['All',...new Set(sd.map(d=>d.site||'').filter(Boolean))].sort();
+      const otherSites=[...new Set(sd.map(d=>d.site||'').filter(s=>Boolean(s)&&s!=='All'))].sort();
+      const sites=['All',...otherSites];
       if(sites.length>1){
         siteRow.style.display='';
         sites.forEach(s=>{
@@ -1324,7 +1433,8 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
   /* ── CSV Import ── */
   $('import-btn').addEventListener('click',()=>{
     $('import-status').style.display='none';
-    $('import-status').textContent='';
+    $('import-status-text').textContent='';
+    $('import-cancel-btn').textContent='Cancel';
     $('import-modal').classList.add('open');
   });
   $('import-cancel-btn').addEventListener('click',()=>$('import-modal').classList.remove('open'));
@@ -1343,13 +1453,15 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
         url:       headers.indexOf('url'),
         side:      headers.indexOf('side'),
         categories:headers.indexOf('categories'),
-        version:   headers.indexOf('version'),
         last_updated:headers.indexOf('last_updated'),
         needs_review:headers.indexOf('needs_review'),
+        languages: headers.indexOf('languages'),
         site:      headers.indexOf('site'),
       };
 
-      const missing=Object.entries(idx).filter(([k,v])=>v===-1).map(([k])=>k);
+      // languages is optional — remove from missing check
+      const requiredCols=['name','url','side','categories','last_updated','needs_review','site'];
+      const missing=requiredCols.filter(k=>idx[k]===-1);
       if(missing.length){
         showImportStatus(`Missing columns: ${missing.join(', ')}`, 'err');
         return;
@@ -1366,40 +1478,47 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
         const url=(cols[idx.url]||'').trim().replace(/^["']|["']$/g,'');
         const side=(cols[idx.side]||'').trim().toLowerCase().replace(/^["']|["']$/g,'');
         const catsRaw=(cols[idx.categories]||'').trim().replace(/^["']|["']$/g,'');
-        const verNum=parseInt((cols[idx.version]||'1').trim())||1;
-        const lastUpd=(cols[idx.last_updated]||'').trim().replace(/^["']|["']$/g,'');
+        const lastUpdRaw=(cols[idx.last_updated]||'').trim().replace(/^["']|["']$/g,'');
+        // Normalize M/D/YYYY → YYYY-MM-DD
+        const lastUpd=(()=>{
+          const mdy=lastUpdRaw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+          if(mdy) return `${mdy[3]}-${mdy[1].padStart(2,'0')}-${mdy[2].padStart(2,'0')}`;
+          return lastUpdRaw;
+        })();
         const needsReview=(cols[idx.needs_review]||'').trim().toLowerCase()==='true';
         const site=(cols[idx.site]||'').trim().replace(/^["']|["']$/g,'');
+        const langsRaw=idx.languages>-1?(cols[idx.languages]||'').trim().replace(/^["']|["']$/g,''):'';
+        const langs=langsRaw?langsRaw.split(',').map(l=>l.trim()).filter(Boolean):[];
 
         if(!name||!url){ skipped++; continue; }
         if(!['staff','partners'].includes(side)){ skipped++; continue; }
         if(side==='partners'&&!site){ skipped++; continue; }
 
-        const cats=catsRaw.split(',').map(c=>c.trim()).filter(Boolean);
+        const cats=catsRaw.split(',').map(c=>toTitleCase(c.trim())).filter(Boolean);
         if(cats.length===1&&cats[0]==='Multilingual'){ skipped++; continue; }
-        const fullName=`${name}_v${verNum}`;
 
         // Save any new custom cats
         for(const cat of cats){
           if(!builtIn.includes(cat)&&!customCats.includes(cat)){
             customCats.push(cat);
+            customCats.sort();
             await saveCustomCat(cat);
           }
         }
 
         const existingIdx=allData.findIndex(d=>
           d.side===side &&
-          (d.name||'').toLowerCase()===fullName.toLowerCase()
+          (d.name||'').toLowerCase()===name.toLowerCase()
         );
 
         try {
           if(existingIdx>-1){
-            const updated_item={...allData[existingIdx], name:fullName, url, categories:cats, category:cats[0]||'', last_updated:lastUpd, needsReview, site};
+            const updated_item={...allData[existingIdx], name, url, categories:cats, category:cats[0]||'', last_updated:lastUpd, needsReview, site, languages:langs};
             await updateItem(updated_item);
             allData[existingIdx]=updated_item;
             updated++;
           } else {
-            const newItem={id:uid(), name:fullName, url, categories:cats, category:cats[0]||'', side, created_at:new Date().toISOString(), last_updated:lastUpd, pinned:false, needsReview, site};
+            const newItem={id:uid(), name, url, categories:cats, category:cats[0]||'', side, created_at:new Date().toISOString(), last_updated:lastUpd, pinned:false, needsReview, site, languages:langs};
             const saved=await saveNewItem(newItem);
             allData.push(saved);
             added++;
@@ -1429,17 +1548,44 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
   }
 
   function showImportStatus(msg, type){
-    const el=$('import-status');
-    el.textContent=msg;
-    el.style.color=type==='ok'?'var(--em)':'var(--red)';
-    el.style.display='block';
+    if(type==='ok'){
+      $('import-modal').classList.remove('open');
+      // Parse counts from msg e.g. "Done — 2 added, 0 updated, 0 skipped."
+      const m=msg.match(/(\d+) added.*?(\d+) updated.*?(\d+) skipped/);
+      const stats=$('import-success-stats');
+      stats.innerHTML='';
+      if(m){
+        const items=[{label:'Added',val:m[1],bg:'var(--em-lt)',color:'var(--em)'},{label:'Updated',val:m[2],bg:'var(--blue-lt)',color:'var(--blue)'},{label:'Skipped',val:m[3],bg:'var(--slate-100)',color:'var(--slate-600)'}];
+        items.forEach(({label,val,bg,color})=>{
+          stats.innerHTML+=`<div style="background:${bg};border-radius:8px;padding:.5rem .85rem;min-width:70px"><div style="font-size:1.4rem;font-weight:600;color:${color}">${val}</div><div style="font-size:.72rem;color:${color};opacity:.8">${label}</div></div>`;
+        });
+      } else {
+        stats.textContent=msg;
+      }
+      $('import-success-modal').classList.add('open');
+    } else {
+      const el=$('import-status');
+      $('import-status-text').textContent=msg;
+      el.style.color='var(--red)';
+      el.style.display='flex';
+    }
   }
+
+  $('import-another-btn').addEventListener('click',()=>{
+    $('import-success-modal').classList.remove('open');
+    $('import-status').style.display='none';
+    $('import-cancel-btn').textContent='Cancel';
+    $('import-modal').classList.add('open');
+  });
+  $('import-done-btn').addEventListener('click',()=>{
+    $('import-success-modal').classList.remove('open');
+  });
 
   /* ── CSV Template download ── */
   $('template-btn').addEventListener('click',()=>{
-    const headers='name,url,side,categories,version,last_updated,needs_review,site';
-    const example1='Staff Meeting Notes,https://box.com/your-link,staff,Meeting Notes,5,2026-05-28,false,';
-    const example2='AANHPI Health Flyer,https://box.com/your-link,partners,"Flyers,Multilingual",3,2026-05-20,true,SF Chinatown';
+    const headers='name,url,side,categories,last_updated,needs_review,site';
+    const example1='Staff side example doc,https://box.com/your-link,staff,Meeting Notes,2026-05-28,false,';
+    const example2='Partner side example doc,https://box.com/your-link,partners,"Flyers,Multilingual",2026-05-20,true,CSUEB';
     const csv=[headers,example1,example2].join('\n');
     const blob=new Blob([csv],{type:'text/csv'});
     const a=document.createElement('a');
