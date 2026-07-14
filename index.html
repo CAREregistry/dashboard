@@ -327,6 +327,30 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
   </div>
 </div>
 
+<!-- MANAGE MODAL -->
+<div id="manage-modal" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal-box" style="max-width:480px">
+    <h2 style="margin-bottom:.75rem">Manage</h2>
+    <div style="display:flex;border-bottom:1.5px solid var(--slate-200);margin-bottom:1rem">
+      <button class="manage-tab" data-tab="cats" style="padding:.45rem 1rem;font-size:.85rem;font-weight:500;background:none;border:none;border-bottom:2.5px solid var(--blue);margin-bottom:-1.5px;color:var(--blue);cursor:pointer">Custom Categories</button>
+      <button class="manage-tab" data-tab="sites" style="padding:.45rem 1rem;font-size:.85rem;font-weight:500;background:none;border:none;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;color:var(--slate-500);cursor:pointer">Partner Sites</button>
+    </div>
+    <div id="manage-cats-tab">
+      <p style="font-size:.8rem;color:var(--slate-500);margin-bottom:.65rem">Built-in categories cannot be deleted. Only custom categories are shown here.</p>
+      <div id="manage-cats-list" style="display:flex;flex-direction:column;gap:.4rem;max-height:280px;overflow-y:auto"></div>
+      <p id="manage-cats-empty" style="display:none;font-size:.83rem;color:var(--slate-400);text-align:center;padding:1.5rem 0">No custom categories yet.</p>
+    </div>
+    <div id="manage-sites-tab" style="display:none">
+      <p style="font-size:.8rem;color:var(--slate-500);margin-bottom:.65rem">Deleting a site only removes it from the dropdown — existing documents assigned to it are not affected.</p>
+      <div id="manage-sites-list" style="display:flex;flex-direction:column;gap:.4rem;max-height:280px;overflow-y:auto"></div>
+      <p id="manage-sites-empty" style="display:none;font-size:.83rem;color:var(--slate-400);text-align:center;padding:1.5rem 0">No partner sites yet.</p>
+    </div>
+    <div class="modal-actions" style="margin-top:1rem">
+      <button id="manage-close-btn" class="btn btn-ghost">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- IMPORT SUCCESS MODAL -->
 <div id="import-success-modal" class="overlay" role="dialog" aria-modal="true">
   <div class="modal-box" style="max-width:360px;text-align:center">
@@ -374,6 +398,9 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
         </button>
         <button id="import-btn" class="btn btn-ghost">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import CSV
+        </button>
+        <button id="manage-btn" class="btn-icon" title="Manage categories & sites" style="color:var(--slate-400);padding:.35rem">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
         <input id="csv-file-input" type="file" accept=".csv" style="display:none">
         <button id="logout-btn" class="btn btn-ghost" style="display:none" title="Log out of staff access">
@@ -1439,6 +1466,16 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
   });
   $('import-cancel-btn').addEventListener('click',()=>$('import-modal').classList.remove('open'));
 
+  // Close import modal on outside click
+  $('import-modal').addEventListener('click', e=>{
+    if(e.target===$('import-modal')) $('import-modal').classList.remove('open');
+  });
+
+  // Close manage modal on outside click
+  $('manage-modal').addEventListener('click', e=>{
+    if(e.target===$('manage-modal')) $('manage-modal').classList.remove('open');
+  });
+
   document.getElementById('csv-file-input2').addEventListener('change', function(){
     const file=this.files[0];
     if(!file) return;
@@ -1579,6 +1616,108 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
   });
   $('import-done-btn').addEventListener('click',()=>{
     $('import-success-modal').classList.remove('open');
+  });
+
+  /* ── Manage Modal ── */
+  function renderManageItem(name, onDelete){
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:.45rem .65rem;border-radius:6px;background:var(--slate-50);border:1px solid var(--slate-200);font-size:.83rem';
+    const label=document.createElement('span');
+    label.textContent=name;
+    label.style.color='var(--slate-700)';
+    const del=document.createElement('button');
+    del.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>';
+    del.title='Delete';
+    del.style.cssText='background:none;border:none;cursor:pointer;color:var(--red,#dc2626);display:flex;align-items:center;padding:.2rem;border-radius:4px;flex-shrink:0';
+    del.addEventListener('mouseenter',()=>del.style.background='#fef2f2');
+    del.addEventListener('mouseleave',()=>del.style.background='none');
+    del.addEventListener('click',()=>onDelete(row));
+    row.appendChild(label);
+    row.appendChild(del);
+    return row;
+  }
+
+  function refreshManageCats(){
+    const list=$('manage-cats-list');
+    const empty=$('manage-cats-empty');
+    list.innerHTML='';
+    const sorted=[...customCats].sort();
+    if(sorted.length===0){ empty.style.display=''; return; }
+    empty.style.display='none';
+    sorted.forEach(cat=>{
+      list.appendChild(renderManageItem(cat, async (row)=>{
+        if(!confirm(`Delete category "${cat}"?`)) return;
+        try {
+          customCats=customCats.filter(c=>c!==cat);
+          const r=await fetch(`${SB_URL}/rest/v1/custom_cats?name=eq.${encodeURIComponent(cat)}`,{method:'DELETE',headers:SB_HDRS});
+          if(!r.ok) throw new Error(await r.text());
+          row.remove();
+          buildCustomCatCheckboxes();
+          renderFilters();
+          if(customCats.length===0) empty.style.display='';
+          toast(`"${cat}" deleted.`,'ok');
+        } catch(e){ toast('Error deleting category.'); }
+      }));
+    });
+  }
+
+  function refreshManageSites(){
+    const list=$('manage-sites-list');
+    const empty=$('manage-sites-empty');
+    list.innerHTML='';
+    const sorted=[...partnerSites].sort();
+    if(sorted.length===0){ empty.style.display=''; return; }
+    empty.style.display='none';
+    sorted.forEach(site=>{
+      list.appendChild(renderManageItem(site, async (row)=>{
+        if(!confirm(`Delete site "${site}"?`)) return;
+        try {
+          partnerSites=partnerSites.filter(s=>s!==site);
+          const r=await fetch(`${SB_URL}/rest/v1/partner_sites?name=eq.${encodeURIComponent(site)}`,{method:'DELETE',headers:SB_HDRS});
+          if(!r.ok) throw new Error(await r.text());
+          row.remove();
+          populateSiteDropdown('');
+          renderFilters();
+          if(partnerSites.length===0) empty.style.display='';
+          toast(`"${site}" deleted.`,'ok');
+        } catch(e){ toast('Error deleting site.'); }
+      }));
+    });
+  }
+
+  // Tab switching
+  document.querySelectorAll('.manage-tab').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.manage-tab').forEach(t=>{
+        t.style.borderBottomColor='transparent';
+        t.style.color='var(--slate-500)';
+      });
+      btn.style.borderBottomColor='var(--blue)';
+      btn.style.color='var(--blue)';
+      $('manage-cats-tab').style.display=btn.dataset.tab==='cats'?'':'none';
+      $('manage-sites-tab').style.display=btn.dataset.tab==='sites'?'':'none';
+      if(btn.dataset.tab==='cats') refreshManageCats();
+      else refreshManageSites();
+    });
+  });
+
+  $('manage-btn').addEventListener('click',()=>{
+    // Reset to cats tab
+    document.querySelectorAll('.manage-tab').forEach(t=>{
+      t.style.borderBottomColor='transparent';
+      t.style.color='var(--slate-500)';
+    });
+    const catsTab=document.querySelector('.manage-tab[data-tab="cats"]');
+    catsTab.style.borderBottomColor='var(--blue)';
+    catsTab.style.color='var(--blue)';
+    $('manage-cats-tab').style.display='';
+    $('manage-sites-tab').style.display='none';
+    refreshManageCats();
+    $('manage-modal').classList.add('open');
+  });
+
+  $('manage-close-btn').addEventListener('click',()=>{
+    $('manage-modal').classList.remove('open');
   });
 
   /* ── CSV Template download ── */
