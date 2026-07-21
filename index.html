@@ -281,19 +281,19 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
             <td style="padding:.4rem .65rem;color:var(--slate-700)">Comma-separated — <code>Flyers,Onboarding</code></td>
           </tr>
           <tr style="border-top:1px solid var(--slate-200)">
+            <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>languages</code></td>
+            <td style="padding:.4rem .65rem;color:var(--slate-700)">Optional, comma-separated — <code>English,Vietnamese</code></td>
+          </tr>
+          <tr style="border-top:1px solid var(--slate-200);background:var(--slate-50)">
             <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>last_updated</code></td>
             <td style="padding:.4rem .65rem;color:var(--slate-700)">M/DD/YYYY — <code>5/30/2026</code></td>
           </tr>
-          <tr style="border-top:1px solid var(--slate-200);background:var(--slate-50)">
+          <tr style="border-top:1px solid var(--slate-200)">
             <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>needs_review</code></td>
             <td style="padding:.4rem .65rem;display:flex;gap:.3rem;align-items:center">
               <span style="background:#fef2f2;color:#dc2626;padding:.1rem .45rem;border-radius:999px;font-size:.72rem;font-weight:500">true</span>
               <span style="background:#f1f5f9;color:#475569;padding:.1rem .45rem;border-radius:999px;font-size:.72rem;font-weight:500">false</span>
             </td>
-          </tr>
-          <tr style="border-top:1px solid var(--slate-200)">
-            <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>languages</code></td>
-            <td style="padding:.4rem .65rem;color:var(--slate-700)">Optional, comma-separated — <code>English,Vietnamese</code></td>
           </tr>
           <tr style="border-top:1px solid var(--slate-200);background:var(--slate-50)">
             <td style="padding:.4rem .65rem;color:var(--slate-500)"><code>site</code></td>
@@ -1490,9 +1490,9 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
         url:       headers.indexOf('url'),
         side:      headers.indexOf('side'),
         categories:headers.indexOf('categories'),
+        languages: headers.indexOf('languages'),
         last_updated:headers.indexOf('last_updated'),
         needs_review:headers.indexOf('needs_review'),
-        languages: headers.indexOf('languages'),
         site:      headers.indexOf('site'),
       };
 
@@ -1722,9 +1722,9 @@ input:focus,select:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(
 
   /* ── CSV Template download ── */
   $('template-btn').addEventListener('click',()=>{
-    const headers='name,url,side,categories,last_updated,needs_review,site';
-    const example1='Staff side example doc,https://box.com/your-link,staff,Meeting Notes,2026-05-28,false,';
-    const example2='Partner side example doc,https://box.com/your-link,partners,"Flyers,Multilingual",2026-05-20,true,CSUEB';
+    const headers='name,url,side,categories,languages,last_updated,needs_review,site';
+    const example1='Staff side example doc,https://box.com/your-link,staff,Meeting Notes,English,2026-05-28,false,';
+    const example2='Partner side example doc,https://box.com/your-link,partners,"Flyers,Multilingual","English,Vietnamese",2026-05-20,true,CSUEB';
     const csv=[headers,example1,example2].join('\n');
     const blob=new Blob([csv],{type:'text/csv'});
     const a=document.createElement('a');
