@@ -1,36 +1,32 @@
 # UCSF CARE Dashboard
-
 An internal link management dashboard for the UCSF CARE team. Organizes Box document links for staff and external partners, with shared data stored in Supabase and hosted via GitHub Pages.
 
 ---
 
 ## Access
-
 **Live URL:** `https://careregistry.github.io/dashboard`
 
 The dashboard has two sides:
-
 - **Partners** — open access, no login required. Displays partner-facing documents organized by site and category.
 - **Staff** — passcode protected. Allows adding, editing, deleting, and managing all links on both sides.
 
 ---
 
 ## Features
-
-- Add, edit, and delete document links with version numbering
+- Add, edit, and delete document links
 - Pin up to 3 documents per section
-- Filter by category, partner site, and "Needs review" status
+- Filter by category, language, partner site, and "Needs review" status
 - Search across all links
 - Grid and list view toggle
 - CSV bulk import
 - Custom categories
+- Staff can manage (view and delete) custom categories and partner sites
 - Quick Resources section on the landing page (editable by staff)
 - All data shared in real time across team members via Supabase
 
 ---
 
 ## Tech Stack
-
 | Layer | Service | Cost |
 |---|---|---|
 | Frontend | GitHub Pages | Free |
@@ -40,7 +36,6 @@ The dashboard has two sides:
 ---
 
 ## Database Tables (Supabase)
-
 | Table | Purpose |
 |---|---|
 | `links` | All staff and partner document links |
@@ -52,9 +47,7 @@ The dashboard has two sides:
 ---
 
 ## Updating the Dashboard
-
 To publish changes, upload the updated `index.html` to the GitHub repo:
-
 1. Go to the repo on GitHub
 2. Click **Add file → Upload files**
 3. Upload the new file (must be named `index.html`)
@@ -64,9 +57,7 @@ To publish changes, upload the updated `index.html` to the GitHub repo:
 ---
 
 ## Resetting the Staff Passcode
-
 If the passcode is forgotten, run this in the **Supabase SQL Editor** with the new password replacing 'YourNewPassword':
-
 ```sql
 update settings
 set value = encode(sha256('YourNewPassword'::bytea), 'hex')
@@ -75,29 +66,23 @@ where key = 'staff_passcode_hash';
 
 ---
 
-## Adding a New Partner Site
+## Managing Custom Categories & Partner Sites
+New categories and partner sites can be added on the fly from the Add Link form (Staff login required) — they're saved to the `custom_cats` and `partner_sites` tables and appear immediately for all users.
 
-New sites can be added on the fly from the Add Link form on the Partners side (Staff login required). They are saved to the `partner_sites` table and will appear in the dropdown for all users immediately.
+To view or delete existing custom categories and partner sites, staff can click the gear icon next to **Import CSV** to open the **Manage** panel, which has separate tabs for each. Built-in categories cannot be deleted. Deleting a partner site only removes it from the dropdown — any documents already assigned to it are unaffected.
 
 ---
 
 ## CSV Bulk Import
-
-Staff can import links in bulk via CSV. Download the template from the Import button in the dashboard. Required columns:
+Staff can import links in bulk via CSV. Download the template from the Import button in the dashboard. Required columns, in order:
 
 | Column | Description |
 |---|---|
-| `name` | Document name (version number added automatically) |
+| `name` | Document name |
 | `url` | Full URL |
 | `side` | `staff` or `partners` |
 | `categories` | Comma-separated (e.g. `Flyers,Multilingual`) |
-| `version` | Version number (e.g. `1`) |
+| `languages` | Optional, comma-separated (e.g. `English,Vietnamese`) |
 | `last_updated` | Date in `YYYY-MM-DD` format |
 | `needs_review` | `true` or `false` |
 | `site` | Partner site name (required for partners side) |
-
----
-
-## Maintainer
-
-This dashboard is owned and maintained by Emily Dang — UCSF CARE (emily.dang2@ucsf.edu).
